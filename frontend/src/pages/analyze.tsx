@@ -85,7 +85,7 @@ const AnalyzeLayout = styled.div`
           width: 100%;
           height: 100%;
           aspect-ratio: 16 / 9;
-          /* object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음. */
+          object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음.
         }
       }
       .label {
@@ -133,7 +133,7 @@ const AnalyzeLayout = styled.div`
             width: 100%;
             height: 100%;
             aspect-ratio: 16 / 9;
-            /* object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음. */
+            object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음.
           }
         }
         .label {
@@ -320,7 +320,7 @@ const Analyze = () => {
               <div className='abcBtn' onClick={onClick1}>
                 ABC
               </div>
-              <input type='file' ref={fileRef1} onChange={onchange1} style={{ display: 'none' }} />
+              <input type='file' accept='.jpg, .png' ref={fileRef1} onChange={onchange1} style={{ display: 'none' }} />
             </div>
             <div className='label'>
               Both leg
@@ -340,7 +340,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick2}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef2} onChange={onchange2} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef2} onChange={onchange2} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Rt foot

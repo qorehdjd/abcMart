@@ -182,9 +182,9 @@ const Survey = () => {
             </div>
           </div>
         </div>
-        <div className='copyright'>
+        {/* <div className='copyright'>
           <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-        </div>
+        </div> */}
       </SurveyLayout>
     </>
   );

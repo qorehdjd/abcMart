@@ -291,9 +291,9 @@ const Login = () => {
               <li className='find_text'>회원가입</li>
             </ul>
           </div>
-          <div className='copyright'>
+          {/* <div className='copyright'>
             <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-          </div>
+          </div> */}
         </div>
       </LoginLayout>
     </>
