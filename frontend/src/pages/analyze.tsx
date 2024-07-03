@@ -320,7 +320,7 @@ const Analyze = () => {
               <div className='abcBtn' onClick={onClick1}>
                 ABC
               </div>
-              <input type='file' accept='.jpg, .png' ref={fileRef1} onChange={onchange1} style={{ display: 'none' }} />
+              <input type='file' accept='image/*' ref={fileRef1} onChange={onchange1} style={{ display: 'none' }} />
             </div>
             <div className='label'>
               Both leg
@@ -358,7 +358,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick3}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef3} onChange={onchange3} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef3} onChange={onchange3} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Lt foot
@@ -376,7 +376,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick4}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef4} onChange={onchange4} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef4} onChange={onchange4} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Lt ankle
@@ -396,7 +396,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick5}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef5} onChange={onchange5} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef5} onChange={onchange5} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Rt foot
@@ -414,7 +414,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick6}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef6} onChange={onchange6} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef6} onChange={onchange6} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Lt foot
@@ -432,7 +432,7 @@ const Analyze = () => {
                   <div className='abcBtn' onClick={onClick7}>
                     ABC
                   </div>
-                  <input type='file' ref={fileRef7} onChange={onchange7} style={{ display: 'none' }} />
+                  <input type='file' accept='image/*' ref={fileRef7} onChange={onchange7} style={{ display: 'none' }} />
                 </div>
                 <div className='label'>
                   Rt ankle
