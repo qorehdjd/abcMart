@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const Container = styled.div`
@@ -155,7 +155,11 @@ const RightSection = styled.div`
   }
 `;
 
-const UploadArea = styled.div`
+interface UploadAreaProps {
+  hasImage: boolean;
+}
+
+const UploadArea = styled.div<UploadAreaProps>`
   background-color: #f6f9fc;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -284,12 +288,12 @@ const ModalImage = styled.img`
   border-radius: 10px;
 `;
 
-const Analyze = () => {
-  const [previews, setPreviews] = useState(Array(7).fill(null));
-  const [modalImage, setModalImage] = useState(null);
+const Analyze: React.FC = () => {
+  const [previews, setPreviews] = useState<(string | null)[]>(Array(7).fill(null));
+  const [modalImage, setModalImage] = useState<string | null>(null);
 
-  const handleFileChange = (event, index) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = event.target.files?.[0];
     if (file) {
       const newPreviews = [...previews];
       newPreviews[index] = URL.createObjectURL(file);
@@ -297,7 +301,7 @@ const Analyze = () => {
     }
   };
 
-  const openModal = (imageSrc) => {
+  const openModal = (imageSrc: string) => {
     setModalImage(imageSrc);
   };
 
@@ -322,9 +326,9 @@ const Analyze = () => {
                 <PreviewContainer>
                   {previews[index] ? (
                     <PreviewImage
-                      src={previews[index]}
+                      src={previews[index]!}
                       alt={`미리보기 ${index + 1}`}
-                      onClick={() => openModal(previews[index])}
+                      onClick={() => openModal(previews[index]!)}
                     />
                   ) : (
                     <CameraIcon src='/imgs/icon-photo.png' alt='카메라 아이콘' />
