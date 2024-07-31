@@ -2,8 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 
+// 전역 스타일 정의
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 600px) {
     html {
@@ -12,13 +13,36 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const LoginLayout = styled.div`
+// 좌우로 움직이는 애니메이션 정의
+const moveSideToSide = keyframes`
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px); /* 좌우로 10px씩 움직이게 설정 */
+  }
+`;
+
+// 페이드 업 애니메이션 정의
+const fadeUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+// 스타일드 컴포넌트 정의
+const LoginContainer = styled.div`
   display: flex;
   height: 100vh;
-  .loginWalkImg_section {
+  .login-walk-img-section {
     background-color: #e6f2ff;
     flex: 1;
-    .loginWalkImg_wrapper {
+    .login-walk-img-wrapper {
       height: 100%;
       display: flex;
       justify-content: center;
@@ -27,20 +51,22 @@ const LoginLayout = styled.div`
         position: relative !important;
         width: 493px !important;
         height: 435px !important;
+        animation: ${moveSideToSide} 2s infinite, ${fadeUp} 1s ease-out; /* 애니메이션 적용 */
       }
     }
   }
-  .login_section {
+  .login-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    .login_wrapper {
+    .login-wrapper {
       width: 60%;
       min-width: 542px;
-      .abc-walk101Logo_wrapper {
+      animation: ${fadeUp} 1s ease-out; /* 애니메이션 적용 */
+      .abc-walk101-logo-wrapper {
         width: 100%;
         display: flex;
         justify-content: center;
@@ -58,7 +84,7 @@ const LoginLayout = styled.div`
         display: flex;
         flex-direction: column;
         align-items: center;
-        .id_wrapper {
+        .id-wrapper {
           background-color: #fff;
           width: 100%;
           height: 40px;
@@ -75,7 +101,7 @@ const LoginLayout = styled.div`
             border: solid 2px #1a4a9d;
           }
         }
-        .password_wrapper {
+        .password-wrapper {
           background-color: #fff;
           width: 100%;
           height: 40px;
@@ -91,18 +117,18 @@ const LoginLayout = styled.div`
             border: solid 2px #1a4a9d;
           }
         }
-        .persist_login_wrapper {
+        .persist-login-wrapper {
           width: 100%;
           font-size: 1.4rem;
           margin-top: 1.4rem;
           display: flex;
           align-items: center;
         }
-        .login_btn_wrapper {
+        .login-btn-wrapper {
           width: 100%;
           margin-bottom: 1rem;
           margin-top: 10%;
-          .login_btn {
+          .login-btn {
             width: 100%;
             background-color: #1a4a9d;
             color: #fff;
@@ -115,23 +141,23 @@ const LoginLayout = styled.div`
           }
         }
       }
-      .find_wrap {
+      .find-wrap {
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: 1.4rem;
-        .find_text {
+        .find-text {
           font-size: 1.4rem;
           cursor: pointer;
           display: flex;
           align-items: center;
         }
-        .find_text:hover {
+        .find-text:hover {
           text-decoration: underline;
           text-underline-offset: 4px;
         }
       }
-      .find_wrap li + li::before {
+      .find-wrap li + li::before {
         content: '';
         display: inline-block;
         width: 1px;
@@ -150,35 +176,33 @@ const LoginLayout = styled.div`
 
   @media screen and (max-width: 1200px) {
     flex-direction: column;
-    .loginWalkImg_section {
+    .login-walk-img-section {
       display: flex;
       justify-content: center;
-      /* height: 50%; */
-      .loginWalkImg_wrapper {
+      .login-walk-img-wrapper {
         width: 80%;
         img {
           position: relative !important;
         }
       }
     }
-    .login_section {
-      /* height: 50%; */
+    .login-section {
       justify-content: space-between;
       align-items: center;
-      .login_wrapper {
+      .login-wrapper {
         flex: 1;
         margin-top: 3rem;
         .title {
           margin-bottom: 5%;
         }
         form {
-          .id_wrapper {
+          .id-wrapper {
             height: 4.5rem;
           }
-          .password_wrapper {
+          .password-wrapper {
             height: 4.5rem;
           }
-          .login_btn_wrapper {
+          .login-btn-wrapper {
             margin-top: 5%;
           }
         }
@@ -192,25 +216,25 @@ const LoginLayout = styled.div`
   }
 
   @media screen and (max-width: 600px) {
-    .loginWalkImg_section {
-      .loginWalkImg_wrapper {
+    .login-walk-img-section {
+      .login-walk-img-wrapper {
         img {
           width: 80% !important;
           height: fit-content !important;
         }
       }
     }
-    .login_section {
+    .login-section {
       justify-content: space-between;
       margin: 3rem 0;
-      .login_wrapper {
+      .login-wrapper {
         width: 90%;
         min-width: auto;
         margin: 3rem 0;
         .title {
           font-size: 1.6rem;
         }
-        .abc-walk101Logo_wrapper {
+        .abc-walk101-logo-wrapper {
           width: 100%;
           a {
             display: flex;
@@ -238,29 +262,32 @@ const LoginLayout = styled.div`
   }
 `;
 
+// 로그인 컴포넌트 정의
 const Login = () => {
   const router = useRouter();
 
-  const onClickLogin = useCallback(() => {
+  // 로그인 버튼 클릭 핸들러
+  const handleLoginClick = useCallback(() => {
     router.push('/survey');
-  }, []);
+  }, [router]);
 
-  const onSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+  // 폼 제출 핸들러
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   }, []);
 
   return (
     <>
       <GlobalStyle />
-      <LoginLayout>
-        <div className='loginWalkImg_section'>
-          <div className='loginWalkImg_wrapper'>
+      <LoginContainer>
+        <div className='login-walk-img-section'>
+          <div className='login-walk-img-wrapper'>
             <Image src='/imgs/loginWalkImg.png' fill alt='loginWalkImg' />
           </div>
         </div>
-        <div className='login_section'>
-          <div className='login_wrapper'>
-            <div className='abc-walk101Logo_wrapper'>
+        <div className='login-section'>
+          <div className='login-wrapper'>
+            <div className='abc-walk101-logo-wrapper'>
               <Link href='/'>
                 <Image src='/imgs/abc-walk101Logo.png' width={426} height={56} alt='abc-walk101Logo' />
               </Link>
@@ -268,34 +295,31 @@ const Login = () => {
             <div className='title'>
               <p>WALK101과 ABC-MART가 함께 하는 발목 솔루션 프로그램</p>
             </div>
-            <form onSubmit={onSubmit}>
-              <div className='id_wrapper'>
+            <form onSubmit={handleSubmit}>
+              <div className='id-wrapper'>
                 <input placeholder='직원 아이디' />
               </div>
-              <div className='password_wrapper'>
+              <div className='password-wrapper'>
                 <input placeholder='비밀번호' type='password' />
               </div>
-              <div className='persist_login_wrapper'>
-                <input id='persist_login' type='checkbox' />
-                <label htmlFor='persist_login'>로그인 상태 유지하기</label>
+              <div className='persist-login-wrapper'>
+                <input id='persist-login' type='checkbox' />
+                <label htmlFor='persist-login'>로그인 상태 유지하기</label>
               </div>
-              <div className='login_btn_wrapper'>
-                <button className='login_btn' onClick={onClickLogin}>
+              <div className='login-btn-wrapper'>
+                <button className='login-btn' onClick={handleLoginClick}>
                   로그인
                 </button>
               </div>
             </form>
-            <ul className='find_wrap'>
-              <li className='find_text'>아이디 찾기</li>
-              <li className='find_text'>비밀번호 찾기</li>
-              <li className='find_text'>회원가입</li>
+            <ul className='find-wrap'>
+              <li className='find-text'>아이디 찾기</li>
+              <li className='find-text'>비밀번호 찾기</li>
+              <li className='find-text'>회원가입</li>
             </ul>
           </div>
-          {/* <div className='copyright'>
-            <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-          </div> */}
         </div>
-      </LoginLayout>
+      </LoginContainer>
     </>
   );
 };

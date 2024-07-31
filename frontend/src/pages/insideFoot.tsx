@@ -214,7 +214,7 @@ const InsideFoot = () => {
                 </div>
               </div>
             </div>
-            <p>
+            {/* <p>
               OOO님은 왼쪽 발은 <span style={{ position: 'relative', top: '-2px' }}>[ ]</span> 각도로
               <br />
               정상 발의 범주에서 벗어나 요족의 형태에 가까우며
@@ -227,7 +227,7 @@ const InsideFoot = () => {
               단, 본 결과는 범위의 오차가 있을 수 있으니
               <br />
               정확한 검진을 위해서는 병원 방문을 적극 권고드립니다.
-            </p>
+            </p> */}
           </div>
           <div className='home_navi_btn_section'>
             <div className='home_navi_btn_wrapper' onClick={onClickHome}>
@@ -236,9 +236,9 @@ const InsideFoot = () => {
             </div>
           </div>
         </div>
-        <div className='copyright'>
+        {/* <div className='copyright'>
           <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-        </div>
+        </div> */}
       </InsideFootLayout>
     </>
   );

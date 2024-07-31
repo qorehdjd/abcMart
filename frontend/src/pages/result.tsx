@@ -89,8 +89,11 @@ const ResultLayout = styled.div`
           position: relative !important;
         }
         .shoe_wrapper {
-          margin-right: 20px;
           border-radius: 4px;
+          width: 100%;
+          img {
+            width: 90% !important;
+          }
         }
       }
     }
@@ -124,10 +127,10 @@ const ResultLayout = styled.div`
         .title_section {
           .title_wrapper {
             span {
-              font-size: 2.3rem;
+              font-size: 2.1rem;
             }
             img {
-              width: 30%;
+              width: 20%;
               height: fit-content !important;
             }
           }
@@ -194,15 +197,6 @@ const Result = () => {
               고객님은 발 내측이 평발의 가능성이 높으며
               <br />
               내측에 비해 뒤꿈치는 매우 안정적인 상태에 속하고 있습니다.
-              <br />
-              그러나 다리 모양은 오다리로 정상 범주보다
-              <br />
-              매우 휘어진 상태이기 때문에 발에 맞지 않는 신발을 착용 시<br />
-              발목과 무릎에 무리를 줄 수 있어 되도록이면
-              <br />
-              신발은 쿠션감이 뛰어나고 발을 교정할 수 있는 브랜드를 찾아
-              <br />
-              착용하는 것을 추천합니다.
             </p>
           </div>
           <div className='recomment_shoes'>
@@ -234,9 +228,9 @@ const Result = () => {
             </div>
           </div>
         </div>
-        <div className='copyright'>
+        {/* <div className='copyright'>
           <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-        </div>
+        </div> */}
       </ResultLayout>
     </>
   );

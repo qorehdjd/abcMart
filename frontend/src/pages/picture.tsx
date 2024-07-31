@@ -2,13 +2,24 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useCallback, useRef } from 'react';
 import { GoArrowLeft } from 'react-icons/go';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 1000px) {
     html {
       font-size: 50%;
     }
+  }
+`;
+
+const fadeUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 `;
 
@@ -19,17 +30,25 @@ const PictureLayout = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 2rem 0;
+  animation: ${fadeUp} 1s ease-in-out;
+
   .picture_section {
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
+    animation: ${fadeUp} 1s ease-in-out;
+
     .picture_wrapper {
       display: flex;
+      animation: ${fadeUp} 1s ease-in-out;
+
       .left_wrapper {
         position: relative;
         margin-right: 7rem;
         width: 50%;
+        animation: ${fadeUp} 1s ease-in-out;
+
         .title_wrapper {
           h1 {
             font-size: 3rem;
@@ -83,33 +102,23 @@ const PictureLayout = styled.div`
         .imgs_section {
           display: flex;
           flex-direction: column;
-          .leg_imgs_section {
-            display: flex;
-            margin-bottom: 2rem;
-            width: 100%;
-            .leg_img_wrapper {
-              width: 50%;
-            }
-            .leg_img_wrapper.margin {
-              margin-right: 2rem;
-            }
-          }
-          .heel_imgs_section {
-            display: flex;
-            margin-bottom: 2rem;
-            width: 100%;
-            .heel_img_wrapper {
-              width: 50%;
-            }
-            .heel_img_wrapper.margin {
-              margin-right: 2rem;
-            }
-          }
+
+          .leg_imgs_section,
+          .heel_imgs_section,
           .knee-ankle_img_section {
             display: flex;
+            margin-bottom: 2rem;
             width: 100%;
+            animation: ${fadeUp} 1s ease-in-out;
+
+            .leg_img_wrapper,
+            .heel_img_wrapper,
             .knee-ankle_img_wrapper {
               width: 100%;
+            }
+            .leg_img_wrapper.margin,
+            .heel_img_wrapper.margin {
+              margin-right: 2rem;
             }
           }
         }
@@ -283,9 +292,6 @@ const Picture = () => {
             </div>
           </div>
         </div>
-        {/* <div className='copyright'>
-          <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-        </div> */}
       </PictureLayout>
     </>
   );

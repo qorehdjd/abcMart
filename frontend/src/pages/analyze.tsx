@@ -1,450 +1,356 @@
-import Image from 'next/image';
-import React, { useCallback, useRef } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import React, { useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle`
-  @media screen and (max-width: 850px) {
-    html {
-      font-size: 50%;
-    }
-  }
-  @media screen and (max-width: 500px) {
-    html {
-      font-size: 40%;
-    }
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  padding: 20px;
+  transition: background-color 0.5s ease;
+
+  @media (max-width: 768px) {
+    padding: 10px;
   }
 `;
 
-const AnalyzeLayout = styled.div`
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const slideIn = keyframes`
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 2.5em;
+  color: #334e68;
+  margin-bottom: 30px;
+  animation: ${fadeIn} 1s ease-in;
+
+  @media (max-width: 768px) {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+`;
+
+const Card = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  .logo_section {
-    .logo_wrapper {
-      width: 30%;
-      padding: 1rem 2rem;
-      img {
-        position: relative !important;
-        height: auto !important;
-        width: 100% !important;
-        max-width: 150px;
-      }
-    }
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  animation: ${slideIn} 0.5s ease-in-out;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 10px;
   }
-  .title_wrapper {
-    display: flex;
+`;
+
+const Section = styled.div`
+  display: flex;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    padding: 10px;
     justify-content: center;
-    width: 100%;
-    background-color: red;
-    padding: 0.5rem;
-    .title {
-      font-weight: 600;
-      font-size: 1.4rem;
-      background-color: yellow;
-      padding: 1rem;
-      font-size: 2rem;
-    }
+    margin-bottom: 10px;
   }
-  .picture_section {
-    display: flex;
-    padding: 2rem 4rem;
-    border: 3px solid red;
-    margin-top: 1rem;
-    flex: 1;
-    .abcBtn {
-      position: absolute;
-      width: 7rem;
-      height: 7rem;
-      border-radius: 50%;
-      background-color: red;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fffc00;
-      font-size: 2.5rem;
-      cursor: pointer;
-    }
-    .left_wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 20%;
-      .picture_wrapper {
-        position: relative;
-        background-color: #eaeef0;
-        width: 100%;
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 3rem;
-        font-weight: 600;
-        color: white;
-        text-align: center;
-        img {
-          width: 100%;
-          height: 100%;
-          aspect-ratio: 16 / 9;
-          object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음.
-        }
-      }
-      .label {
-        background-color: #fffc00;
-        width: 100%;
-        text-align: center;
-        font-size: 2rem;
-        font-weight: 600;
-      }
-    }
-    .right_wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 80%;
-      padding: 0 4rem;
-      .top_wrapper {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        margin-bottom: 5rem;
-        height: 50%;
-      }
-      .bottom_wrapper {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        height: 50%;
-      }
-      .right_picture_section {
-        width: 29%;
-        display: flex;
-        flex-direction: column;
-        .right_picture_wrapper {
-          background-color: #eaeef0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 3rem;
-          font-weight: 600;
-          color: white;
-          text-align: center;
-          flex: 1;
-          img {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: contain; //이미지가 비율에 맞춰서 잘 보임 하지만 크기가 꽉차지 않음.
-          }
-        }
-        .label {
-          background-color: #fffc00;
-          text-align: center;
-          font-size: 2rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      }
-    }
+`;
+
+const LeftSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 400px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    height: auto;
+    justify-content: flex-start;
   }
-  @media screen and (max-width: 500px) {
-    .picture_section {
-      padding: 1rem;
-      .right_wrapper {
-        padding: 0;
-        padding-left: 1rem;
-      }
-    }
+`;
+
+const ExampleContainer = styled.div`
+  background-color: #f6f9fc;
+  height: 300px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+
+  @media (max-width: 768px) {
+    height: 250px;
+    width: 150px;
   }
+`;
+
+const ExampleImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+`;
+
+const ExampleLabel = styled.div`
+  font-size: 16px;
+  color: #627d98;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+
+  @media (max-width: 768px) {
+    margin-top: 10px;
+    font-size: 14px;
+    height: 30px;
+  }
+`;
+
+const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 400px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    height: auto;
+    justify-content: flex-start;
+  }
+`;
+
+const UploadArea = styled.div`
+  background-color: #f6f9fc;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  position: relative;
+  height: 300px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    height: 250px;
+    width: 150px;
+  }
+`;
+
+const UploadButton = styled.label`
+  background-color: #334e68;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  font-size: 15px;
+
+  &:hover {
+    background-color: #102a43;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-top: 15px;
+    height: 30px;
+  }
+`;
+
+const UploadInput = styled.input`
+  display: none;
+`;
+
+const PreviewContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+`;
+
+const CameraIcon = styled.img`
+  width: 50px;
+  height: 50px;
+  opacity: 0.5;
+
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 30px;
+  }
+`;
+
+const AnalyzeButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 20px auto;
+  display: block;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  @media (max-width: 768px) {
+    padding: 5px 10px;
+    font-size: 14px;
+    margin: 10px auto;
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const ModalImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
 `;
 
 const Analyze = () => {
-  const fileRef1 = useRef<HTMLInputElement>(null);
-  const fileRef2 = useRef<HTMLInputElement>(null);
-  const fileRef3 = useRef<HTMLInputElement>(null);
-  const fileRef4 = useRef<HTMLInputElement>(null);
-  const fileRef5 = useRef<HTMLInputElement>(null);
-  const fileRef6 = useRef<HTMLInputElement>(null);
-  const fileRef7 = useRef<HTMLInputElement>(null);
+  const [previews, setPreviews] = useState(Array(7).fill(null));
+  const [modalImage, setModalImage] = useState(null);
 
-  const picWrapper1 = useRef<HTMLDivElement>(null);
-  const picWrapper2 = useRef<HTMLDivElement>(null);
-  const picWrapper3 = useRef<HTMLDivElement>(null);
-  const picWrapper4 = useRef<HTMLDivElement>(null);
-  const picWrapper5 = useRef<HTMLDivElement>(null);
-  const picWrapper6 = useRef<HTMLDivElement>(null);
-  const picWrapper7 = useRef<HTMLDivElement>(null);
-
-  const onClick1 = useCallback(() => {
-    fileRef1.current?.click();
-  }, []);
-  const onClick2 = useCallback(() => {
-    fileRef2.current?.click();
-  }, []);
-  const onClick3 = useCallback(() => {
-    fileRef3.current?.click();
-  }, []);
-  const onClick4 = useCallback(() => {
-    fileRef4.current?.click();
-  }, []);
-  const onClick5 = useCallback(() => {
-    fileRef5.current?.click();
-  }, []);
-  const onClick6 = useCallback(() => {
-    fileRef6.current?.click();
-  }, []);
-  const onClick7 = useCallback(() => {
-    fileRef7.current?.click();
-  }, []);
-
-  const onchange1 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper1.current) {
-          picWrapper1.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
+  const handleFileChange = (event, index) => {
+    const file = event.target.files[0];
+    if (file) {
+      const newPreviews = [...previews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setPreviews(newPreviews);
     }
-  }, []);
+  };
 
-  const onchange2 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper2.current) {
-          picWrapper2.current.innerHTML = `
-            <Image src=${event.target?.result} alt="img"  />
-          `;
-        }
-      };
+  const openModal = (imageSrc) => {
+    setModalImage(imageSrc);
+  };
 
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onchange3 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper3.current) {
-          picWrapper3.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onchange4 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper4.current) {
-          picWrapper4.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onchange5 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper5.current) {
-          picWrapper5.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onchange6 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper6.current) {
-          picWrapper6.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onchange7 = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        if (picWrapper7.current) {
-          picWrapper7.current.innerHTML = `<Image src=${event.target?.result} alt="img"  />`;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const closeModal = () => {
+    setModalImage(null);
+  };
 
   return (
-    <>
-      <GlobalStyle />
-      <AnalyzeLayout>
-        <div className='logo_section'>
-          <div className='logo_wrapper'>
-            <Image src='/imgs/abcLogo.png' fill alt='abcLogo' />
-          </div>
-        </div>
-        <div className='title_wrapper'>
-          <div className='title'>Feet & legs analyzer by WALK101</div>
-        </div>
-        <div className='picture_section'>
-          <div className='left_wrapper'>
-            <div className='picture_wrapper' ref={picWrapper1}>
-              <div className='title'>
-                Both leg
-                <br /> anterior
-              </div>
-              <div className='abcBtn' onClick={onClick1}>
-                ABC
-              </div>
-              <input type='file' accept='image/*' ref={fileRef1} onChange={onchange1} style={{ display: 'none' }} />
-            </div>
-            <div className='label'>
-              Both leg
-              <br />
-              anterior
-            </div>
-          </div>
-          <div className='right_wrapper'>
-            <div className='top_wrapper'>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper2}>
-                  <div>
-                    Rt foot
-                    <br />
-                    superior
-                  </div>
-                  <div className='abcBtn' onClick={onClick2}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef2} onChange={onchange2} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Rt foot
-                  <br />
-                  superior
-                </div>
-              </div>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper3}>
-                  <div>
-                    Lt foot
-                    <br />
-                    superior
-                  </div>
-                  <div className='abcBtn' onClick={onClick3}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef3} onChange={onchange3} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Lt foot
-                  <br />
-                  superior
-                </div>
-              </div>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper4}>
-                  <div>
-                    Lt ankle
-                    <br />
-                    posterior
-                  </div>
-                  <div className='abcBtn' onClick={onClick4}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef4} onChange={onchange4} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Lt ankle
-                  <br />
-                  posterior
-                </div>
-              </div>
-            </div>
-            <div className='bottom_wrapper'>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper5}>
-                  <div>
-                    Rt foot
-                    <br />
-                    medial
-                  </div>
-                  <div className='abcBtn' onClick={onClick5}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef5} onChange={onchange5} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Rt foot
-                  <br />
-                  medial
-                </div>
-              </div>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper6}>
-                  <div>
-                    Lt foot
-                    <br />
-                    medial
-                  </div>
-                  <div className='abcBtn' onClick={onClick6}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef6} onChange={onchange6} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Lt foot
-                  <br />
-                  medial
-                </div>
-              </div>
-              <div className='right_picture_section'>
-                <div className='right_picture_wrapper' ref={picWrapper7}>
-                  <div>
-                    Rt ankle
-                    <br />
-                    posterior
-                  </div>
-                  <div className='abcBtn' onClick={onClick7}>
-                    ABC
-                  </div>
-                  <input type='file' accept='image/*' ref={fileRef7} onChange={onchange7} style={{ display: 'none' }} />
-                </div>
-                <div className='label'>
-                  Rt ankle
-                  <br />
-                  posterior
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </AnalyzeLayout>
-    </>
+    <Container>
+      <Title>촬영하기</Title>
+      <Card>
+        {[...Array(7)].map((_, index) => (
+          <Section key={index}>
+            <LeftSection>
+              <ExampleContainer>
+                <ExampleImage src={`/imgs/picture/right-heel.png`} alt={`예시 사진 ${index + 1}`} />
+              </ExampleContainer>
+              <ExampleLabel>예시</ExampleLabel>
+            </LeftSection>
+            <RightSection>
+              <UploadArea hasImage={!!previews[index]}>
+                <PreviewContainer>
+                  {previews[index] ? (
+                    <PreviewImage
+                      src={previews[index]}
+                      alt={`미리보기 ${index + 1}`}
+                      onClick={() => openModal(previews[index])}
+                    />
+                  ) : (
+                    <CameraIcon src='/imgs/icon-photo.png' alt='카메라 아이콘' />
+                  )}
+                </PreviewContainer>
+              </UploadArea>
+              <UploadButton htmlFor={`file-upload-${index}`}>사진 업로드</UploadButton>
+              <UploadInput
+                type='file'
+                id={`file-upload-${index}`}
+                accept='image/*'
+                onChange={(event) => handleFileChange(event, index)}
+              />
+            </RightSection>
+          </Section>
+        ))}
+        <AnalyzeButton onClick={() => alert('분석을 시작합니다!')}>분석하기</AnalyzeButton>
+      </Card>
+      {modalImage && (
+        <ModalOverlay onClick={closeModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalImage src={modalImage} alt='확대된 이미지' />
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </Container>
   );
 };
 
