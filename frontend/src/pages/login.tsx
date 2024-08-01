@@ -1,10 +1,11 @@
+import React, { useCallback, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { login, clearError } from '../../reducers/user/userSlice';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
 
-// 전역 스타일 정의
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 600px) {
     html {
@@ -13,17 +14,15 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// 좌우로 움직이는 애니메이션 정의
 const moveSideToSide = keyframes`
   0%, 100% {
     transform: translateX(0);
   }
   50% {
-    transform: translateX(20px); /* 좌우로 10px씩 움직이게 설정 */
+    transform: translateX(50px);
   }
 `;
 
-// 페이드 업 애니메이션 정의
 const fadeUp = keyframes`
   from {
     opacity: 0;
@@ -35,7 +34,6 @@ const fadeUp = keyframes`
   }
 `;
 
-// 스타일드 컴포넌트 정의
 const LoginContainer = styled.div`
   display: flex;
   height: 100vh;
@@ -51,7 +49,7 @@ const LoginContainer = styled.div`
         position: relative !important;
         width: 493px !important;
         height: 435px !important;
-        animation: ${moveSideToSide} 2s infinite, ${fadeUp} 1s ease-out; /* 애니메이션 적용 */
+        animation: ${moveSideToSide} 2s infinite, ${fadeUp} 1s ease-out;
       }
     }
   }
@@ -65,7 +63,7 @@ const LoginContainer = styled.div`
     .login-wrapper {
       width: 60%;
       min-width: 542px;
-      animation: ${fadeUp} 1s ease-out; /* 애니메이션 적용 */
+      animation: ${fadeUp} 1s ease-out;
       .abc-walk101-logo-wrapper {
         width: 100%;
         display: flex;
@@ -123,6 +121,20 @@ const LoginContainer = styled.div`
           margin-top: 1.4rem;
           display: flex;
           align-items: center;
+          position: relative;
+          input {
+            position: relative;
+            top: 1px;
+          }
+        }
+        .error-message {
+          color: red;
+          font-size: 1.2rem;
+          margin-top: 1rem;
+          text-align: left;
+          width: 100%;
+          position: absolute;
+          top: 3rem; /* Adjust this value as needed */
         }
         .login-btn-wrapper {
           width: 100%;
@@ -262,19 +274,31 @@ const LoginContainer = styled.div`
   }
 `;
 
-// 로그인 컴포넌트 정의
-const Login = () => {
+const Login: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.user);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  // 로그인 버튼 클릭 핸들러
-  const handleLoginClick = useCallback(() => {
-    router.push('/survey');
-  }, [router]);
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      dispatch(login({ userId: username, password }));
+    },
+    [dispatch, username, password],
+  );
 
-  // 폼 제출 핸들러
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  }, []);
+  useEffect(() => {
+    if (status === 'succeeded') {
+      router.push('/survey');
+    }
+  }, [status, router]);
+
+  // 페이지가 마운트될 때 에러 상태 초기화
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <>
@@ -297,18 +321,24 @@ const Login = () => {
             </div>
             <form onSubmit={handleSubmit}>
               <div className='id-wrapper'>
-                <input placeholder='직원 아이디' />
+                <input placeholder='직원 아이디' value={username} onChange={(e) => setUsername(e.target.value)} />
               </div>
               <div className='password-wrapper'>
-                <input placeholder='비밀번호' type='password' />
+                <input
+                  placeholder='비밀번호'
+                  type='password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
               <div className='persist-login-wrapper'>
                 <input id='persist-login' type='checkbox' />
                 <label htmlFor='persist-login'>로그인 상태 유지하기</label>
+                {error && <div className='error-message'>{error}</div>}
               </div>
               <div className='login-btn-wrapper'>
-                <button className='login-btn' onClick={handleLoginClick}>
-                  로그인
+                <button className='login-btn' type='submit' disabled={status === 'loading'}>
+                  {status === 'loading' ? '로딩 중...' : '로그인'}
                 </button>
               </div>
             </form>

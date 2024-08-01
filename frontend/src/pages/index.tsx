@@ -20,11 +20,14 @@ const moveUpAndDown = keyframes`
     transform: translateY(0);
   }
   50% {
-    transform: translateY(20px);
+    transform: translateY(50px);
   }
 `;
 
 const GlobalStyle = createGlobalStyle`
+  body {
+    overflow: hidden;
+  }
   @media screen and (max-width: 1200px) {
     html {
       font-size: 55%;
