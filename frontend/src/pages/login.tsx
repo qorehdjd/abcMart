@@ -281,24 +281,30 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      dispatch(login({ userId: username, password }));
-    },
-    [dispatch, username, password],
-  );
+  // 임시
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push('/survey');
+  }, []);
 
-  useEffect(() => {
-    if (status === 'succeeded') {
-      router.push('/survey');
-    }
-  }, [status, router]);
+  // const handleSubmit = useCallback(
+  //   (e: React.FormEvent<HTMLFormElement>) => {
+  //     e.preventDefault();
+  //     dispatch(login({ userId: username, password }));
+  //   },
+  //   [dispatch, username, password],
+  // );
 
-  // 페이지가 마운트될 때 에러 상태 초기화
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   if (status === 'succeeded') {
+  //     router.push('/survey');
+  //   }
+  // }, [status, router]);
+
+  // // 페이지가 마운트될 때 에러 상태 초기화
+  // useEffect(() => {
+  //   dispatch(clearError());
+  // }, [dispatch]);
 
   return (
     <>

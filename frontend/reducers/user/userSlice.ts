@@ -46,7 +46,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.status = 'failed';
+        state.status = 'succeeded';
         state.error = '아이디 또는 비밀번호가 일치하지 않습니다.';
       });
   },
