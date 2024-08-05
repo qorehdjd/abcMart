@@ -38,7 +38,12 @@ const GlobalStyle = createGlobalStyle`
       font-size: 50%;
     }
   }
-  @media screen and (max-width: 700px) {
+  @media screen and (max-width: 450px) {
+    html {
+      font-size: 45%;
+    }
+  }
+  @media screen and (max-width: 350px) {
     html {
       font-size: 40%;
     }

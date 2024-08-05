@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoArrowLeft } from 'react-icons/go';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import Lottie from 'lottie-react';
+import emptyBoxAnimation from '../../empty-box.json'; // Lottie 애니메이션 파일 경로
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 850px) {
@@ -13,108 +15,132 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const expand = keyframes`
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: scaleY(0.8);
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+`;
+
+const collapse = keyframes`
+  from {
+    max-height: 1000px;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    transform: scaleY(0.8);
+  }
+`;
+
 const ResultLayout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  /* background-color: #fafafa; */
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
   padding-bottom: 20px;
   padding-top: 5%;
+  min-height: 100vh;
   .result_section {
     height: 100%;
     width: 60%;
+    max-width: 550px;
     font-size: 1.8rem;
     text-align: center;
+
     .logo {
       img {
         position: relative !important;
-        width: 40% !important;
-        min-width: 300px;
+        width: 300px !important;
+      }
+
+      @media screen and (max-width: 450px) {
+        img {
+          width: 200px !important;
+        }
       }
     }
+
     .text {
       font-weight: 600;
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 2rem;
     }
-    .btns_wrapper {
+
+    .accordion {
       width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      button {
-        background-color: #eaeaea;
-        border: none;
-        padding: 1rem 0;
+
+      .accordion-item {
+        background-color: #ffffff;
+        margin-bottom: 1rem;
         cursor: pointer;
-      }
-      .final_result {
-        background-color: #1a4a9d;
-        color: #ffffff;
-        font-weight: 600;
-      }
-    }
-    .result_wrapper {
-      margin: 6rem 0;
-      .imgs_wrapper {
-        display: grid;
-        margin-bottom: 5rem;
-        grid-template-columns: 1fr 1fr 1fr;
-        .img_wrapper {
-          margin-right: 2rem;
-          img {
-            position: relative !important;
-            border-radius: 8px;
-          }
-        }
-      }
-    }
-    .recomment_shoes {
-      .title_section {
-        text-align: start;
-        margin-bottom: 2rem;
-        .title_wrapper {
-          width: fit-content;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+
+        .accordion-header {
+          padding: 1rem;
+          font-weight: 700;
+          font-size: 1.6rem;
           display: flex;
+          justify-content: space-between;
           align-items: center;
+          background-color: #4a90e2;
+          color: #fff;
+          border-bottom: 1px solid #ddd;
+          transition: background-color 0.3s ease-in-out;
+
+          &:hover {
+            background-color: #357ab8;
+          }
+
           span {
-            font-weight: 600;
-            font-size: 2.5rem;
-            margin-right: 1rem;
+            font-size: 2.5rem; /* 버튼 크기를 키움 */
+            line-height: 1; /* 버튼 크기를 조정하여 중앙 정렬 */
           }
         }
-      }
-      .shoes_wrapper {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        img {
-          position: relative !important;
-        }
-        .shoe_wrapper {
-          border-radius: 4px;
-          width: 100%;
-          img {
-            width: 90% !important;
+
+        .accordion-body {
+          padding: 1.5rem;
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+          background-color: #f9f9f9;
+
+          .result_wrapper {
+            .imgs_wrapper {
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr;
+              gap: 2rem;
+              margin-bottom: 2rem;
+
+              .img_wrapper {
+                img {
+                  position: relative !important;
+                  border-radius: 8px;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+              }
+            }
           }
         }
-      }
-    }
-    .home_navi_btn_section {
-      text-align: start;
-      margin-top: 3rem;
-      margin-bottom: 7rem;
-      display: flex;
-      align-items: center;
-      .home_navi_btn_wrapper {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        svg {
-          width: 3rem;
-          height: 3rem;
-          color: #1a4a9d;
-          margin-right: 5px;
-        }
-        span {
-          font-weight: 600;
+
+        .accordion-body.active {
+          max-height: 1000px;
+          opacity: 1;
+          transform: scaleY(1);
         }
       }
     }
@@ -123,24 +149,13 @@ const ResultLayout = styled.div`
   @media screen and (max-width: 850px) {
     .result_section {
       width: 90%;
-      .recomment_shoes {
-        .title_section {
-          .title_wrapper {
-            span {
-              font-size: 2.1rem;
-            }
-            img {
-              width: 20%;
-              height: fit-content !important;
-            }
-          }
-        }
-      }
     }
+
     .copyright {
       width: 100%;
       display: flex;
       justify-content: center;
+
       img {
         width: 55%;
         height: fit-content !important;
@@ -149,16 +164,37 @@ const ResultLayout = styled.div`
   }
 `;
 
+const EmptyContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+
 const Result = () => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const router = useRouter();
 
-  const onClickHome = useCallback(() => {
-    router.push('/');
+  useEffect(() => {
+    setActiveIndex(0); // 첫 번째 아코디언 항목을 기본으로 활성화
   }, []);
 
-  const onClickInsideFoot = useCallback(() => {
-    router.push('/insideFoot');
-  }, []);
+  const toggleAccordion = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+
+  const sections = [
+    {
+      title: '발 내측',
+      content: '',
+    },
+    { title: '발 외측', content: '' },
+    { title: '발 뒤꿈치', content: '' },
+    { title: '다리', content: '' },
+    { title: '섹션5', content: '' },
+    { title: '섹션6', content: '' },
+    { title: '섹션7', content: '' },
+  ];
 
   return (
     <>
@@ -171,66 +207,39 @@ const Result = () => {
             </Link>
           </div>
           <p className='text'>고객님의 분석 결과를 확인 후, 알맞는 신발을 추천해주세요.</p>
-          <div className='btns_wrapper'>
-            <button className='final_result'>최종 분석</button>
-            <button onClick={onClickInsideFoot}>발 내측</button>
-            <button>발 뒤꿈치</button>
-            <button>다리 모양</button>
-          </div>
-          <div className='result_wrapper'>
-            <h2>RESULT</h2>
-            <div className='imgs_wrapper'>
-              <div className='img_wrapper'>
-                <Image src='/imgs/left_leg.png' fill alt='left_leg_img' />
+          <div className='accordion'>
+            {sections.map((section, index) => (
+              <div key={index} className='accordion-item'>
+                <div className='accordion-header' onClick={() => toggleAccordion(index)}>
+                  {section.title}
+                  <span>{activeIndex === index ? '-' : '+'}</span>
+                </div>
+                <div className={`accordion-body ${activeIndex === index ? 'active' : ''}`}>
+                  <div className='result_wrapper'>
+                    {section.content ? (
+                      <div className='imgs_wrapper'>
+                        <div className='img_wrapper'>
+                          <Image src='/imgs/left_leg.png' fill alt='left_leg_img' />
+                        </div>
+                        <div className='img_wrapper'>
+                          <Image src='/imgs/right_leg.png' fill alt='right_leg_img' />
+                        </div>
+                        <div className='img_wrapper'>
+                          <Image src='/imgs/heel.png' fill alt='heel' />
+                        </div>
+                      </div>
+                    ) : (
+                      <EmptyContainer>
+                        <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
+                      </EmptyContainer>
+                    )}
+                    <p>{section.content}</p>
+                  </div>
+                </div>
               </div>
-              <div className='img_wrapper'>
-                <Image src='/imgs/right_leg.png' fill alt='right_leg_img' />
-              </div>
-              <div className='img_wrapper'>
-                <Image src='/imgs/heel.png' fill alt='heel' />
-              </div>
-            </div>
-            <p>
-              고객님의 분석 결과는 아래와 같습니다.
-              <br />
-              <br />
-              고객님은 발 내측이 평발의 가능성이 높으며
-              <br />
-              내측에 비해 뒤꿈치는 매우 안정적인 상태에 속하고 있습니다.
-            </p>
-          </div>
-          <div className='recomment_shoes'>
-            <div className='title_section'>
-              <div className='title_wrapper'>
-                <span>추천 운동화</span>
-                <Image src='/imgs/thumb.png' width={80} height={55} alt='thumb' />
-              </div>
-            </div>
-            <div className='shoes_wrapper'>
-              <div className='shoe_wrapper'>
-                <Image src='/imgs/shoes01.png' fill alt='shoes' />
-              </div>
-              <div className='shoe_wrapper'>
-                <Image src='/imgs/shoes02.png' fill alt='shoes' />
-              </div>
-              <div className='shoe_wrapper'>
-                <Image src='/imgs/shoes03.png' fill alt='shoes' />
-              </div>
-              <div className='shoe_wrapper'>
-                <Image src='/imgs/shoes04.png' fill alt='shoes' />
-              </div>
-            </div>
-          </div>
-          <div className='home_navi_btn_section'>
-            <div className='home_navi_btn_wrapper' onClick={onClickHome}>
-              <GoArrowLeft />
-              <span>처음으로</span>
-            </div>
+            ))}
           </div>
         </div>
-        {/* <div className='copyright'>
-          <Image src='/imgs/copyright.png' width={380} height={23} alt='copyright' />
-        </div> */}
       </ResultLayout>
     </>
   );

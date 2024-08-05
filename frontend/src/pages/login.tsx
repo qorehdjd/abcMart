@@ -14,13 +14,9 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const moveSideToSide = keyframes`
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(50px);
-  }
+const runAnimation = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50px); }
 `;
 
 const fadeUp = keyframes`
@@ -40,6 +36,7 @@ const LoginContainer = styled.div`
   .login-walk-img-section {
     background-color: #e6f2ff;
     flex: 1;
+    padding: 30px;
     .login-walk-img-wrapper {
       height: 100%;
       display: flex;
@@ -49,7 +46,7 @@ const LoginContainer = styled.div`
         position: relative !important;
         width: 493px !important;
         height: 435px !important;
-        animation: ${moveSideToSide} 2s infinite, ${fadeUp} 1s ease-out;
+        animation: ${runAnimation} 1s infinite alternate ease-in-out, ${fadeUp} 1s ease-out;
       }
     }
   }
@@ -282,7 +279,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
 
   // 임시
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.push('/survey');
   }, []);

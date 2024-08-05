@@ -1,5 +1,8 @@
 import React, { useState, ChangeEvent } from 'react';
 import styled, { keyframes } from 'styled-components';
+import Lottie from 'lottie-react';
+import { useRouter } from 'next/router';
+import loadingAnimation from '../../running.json'; // JSON 파일 경로
 
 const Container = styled.div`
   display: flex;
@@ -98,22 +101,25 @@ const LeftSection = styled.div`
     padding: 10px;
     height: auto;
     justify-content: flex-start;
+    align-items: stretch;
   }
 `;
 
 const ExampleContainer = styled.div`
   background-color: #f6f9fc;
-  height: 300px;
-  width: 300px;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
   border: 1px solid #ccc;
+  aspect-ratio: 10/12;
+  height: 300px;
+  width: 300px;
 
   @media (max-width: 768px) {
-    height: 250px;
-    width: 150px;
+    width: auto;
+    height: auto;
   }
 `;
 
@@ -152,6 +158,7 @@ const RightSection = styled.div`
     padding: 10px;
     height: auto;
     justify-content: flex-start;
+    align-items: stretch;
   }
 `;
 
@@ -164,15 +171,17 @@ const UploadArea = styled.div<UploadAreaProps>`
   border: 1px solid #ccc;
   border-radius: 10px;
   position: relative;
-  height: 300px;
-  width: 300px;
+  height: auto;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  aspect-ratio: 10/12;
+  height: 300px;
+  width: 300px;
   @media (max-width: 768px) {
-    height: 250px;
-    width: 150px;
+    width: auto;
+    height: auto;
   }
 `;
 
@@ -199,7 +208,7 @@ const UploadButton = styled.label`
   @media (max-width: 768px) {
     padding: 5px 10px;
     font-size: 12px;
-    margin-top: 15px;
+    margin-top: 10px;
     height: 30px;
   }
 `;
@@ -215,6 +224,7 @@ const PreviewContainer = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+  aspect-ratio: 10/12;
 `;
 
 const PreviewImage = styled.img`
@@ -239,7 +249,7 @@ const CameraIcon = styled.img`
 const AnalyzeButton = styled.button`
   background-color: #007bff;
   color: #fff;
-  padding: 10px 20px;
+  padding: 15px 40px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -252,7 +262,7 @@ const AnalyzeButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    padding: 5px 10px;
+    padding: 10px 20px;
     font-size: 14px;
     margin: 10px auto;
   }
@@ -272,9 +282,7 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: #fff;
   border-radius: 10px;
-  padding: 20px;
   max-width: 90%;
   max-height: 90%;
   overflow: auto;
@@ -288,9 +296,38 @@ const ModalImage = styled.img`
   border-radius: 10px;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+`;
+
+const LottieContainer = styled.div`
+  width: 300px;
+  height: 300px;
+`;
+
+const LoadingText = styled.div`
+  font-size: 1.2em;
+  color: #334e68;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 16px;
+  span {
+    font-size: 25px;
+    font-weight: 600;
+  }
+`;
+
 const Analyze: React.FC = () => {
   const [previews, setPreviews] = useState<(string | null)[]>(Array(7).fill(null));
   const [modalImage, setModalImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>, index: number) => {
     const file = event.target.files?.[0];
@@ -308,6 +345,28 @@ const Analyze: React.FC = () => {
   const closeModal = () => {
     setModalImage(null);
   };
+
+  const handleAnalyzeClick = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      // setIsLoading(false);
+      router.push('/result'); // 결과 페이지로 이동
+    }, 7000); // 10초 후 로딩 상태 해제
+  };
+
+  if (isLoading) {
+    return (
+      <LoadingContainer>
+        <LottieContainer>
+          <Lottie animationData={loadingAnimation} loop />
+        </LottieContainer>
+        <LoadingText>
+          <span>분석 중입니다</span>
+          <br />
+        </LoadingText>
+      </LoadingContainer>
+    );
+  }
 
   return (
     <Container>
@@ -345,7 +404,7 @@ const Analyze: React.FC = () => {
             </RightSection>
           </Section>
         ))}
-        <AnalyzeButton onClick={() => alert('분석을 시작합니다!')}>분석하기</AnalyzeButton>
+        <AnalyzeButton onClick={handleAnalyzeClick}>분석하기</AnalyzeButton>
       </Card>
       {modalImage && (
         <ModalOverlay onClick={closeModal}>
