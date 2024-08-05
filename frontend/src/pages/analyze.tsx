@@ -101,7 +101,7 @@ const LeftSection = styled.div`
     padding: 10px;
     height: auto;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: center;
   }
 `;
 
@@ -118,7 +118,11 @@ const ExampleContainer = styled.div`
   width: 300px;
 
   @media (max-width: 768px) {
-    width: auto;
+    width: 140px;
+    height: auto;
+  }
+  @media (max-width: 380px) {
+    width: 100px;
     height: auto;
   }
 `;
@@ -158,7 +162,7 @@ const RightSection = styled.div`
     padding: 10px;
     height: auto;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: center;
   }
 `;
 
@@ -180,7 +184,11 @@ const UploadArea = styled.div<UploadAreaProps>`
   height: 300px;
   width: 300px;
   @media (max-width: 768px) {
-    width: auto;
+    width: 140px;
+    height: auto;
+  }
+  @media (max-width: 380px) {
+    width: 100px;
     height: auto;
   }
 `;
