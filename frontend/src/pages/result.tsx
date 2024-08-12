@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { GoArrowLeft } from 'react-icons/go';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Lottie from 'lottie-react';
+import Modal from 'react-modal'; // 모달 임포트
 import emptyBoxAnimation from '../../empty-box.json'; // Lottie 애니메이션 파일 경로
 
 const GlobalStyle = createGlobalStyle`
@@ -122,11 +123,11 @@ const ResultLayout = styled.div`
           .result_wrapper {
             .imgs_wrapper {
               display: grid;
-              grid-template-columns: 1fr 1fr 1fr;
+              grid-template-columns: 1fr 1fr; /* 두 개의 이미지를 나란히 표시 */
               gap: 2rem;
-              margin-bottom: 2rem;
 
               .img_wrapper {
+                cursor: pointer; /* 이미지를 클릭할 수 있도록 변경 */
                 img {
                   position: relative !important;
                   border-radius: 8px;
@@ -171,8 +172,24 @@ const EmptyContainer = styled.div`
   height: 100%;
 `;
 
+const ModalImage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* 모달 창의 높이를 100%로 설정 */
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto; /* 이미지 비율 유지 */
+    height: auto; /* 이미지 비율 유지 */
+    border-radius: 8px;
+  }
+`;
+
 const Result = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -183,10 +200,29 @@ const Result = () => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const openModal = (imgSrc: string) => {
+    setSelectedImage(imgSrc);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedImage(null);
+  };
+
   const sections = [
     {
       title: '발 내측',
-      content: '',
+      content: (
+        <div className='imgs_wrapper'>
+          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner.jpg')}>
+            <Image src='/imgs/result/inner/inner.jpg' fill alt='inner_foot_img1' />
+          </div>
+          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner_result.jpg')}>
+            <Image src='/imgs/result/inner/inner_result.jpg' fill alt='inner_foot_img2' />
+          </div>
+        </div>
+      ),
     },
     { title: '발 외측', content: '' },
     { title: '발 뒤꿈치', content: '' },
@@ -217,29 +253,47 @@ const Result = () => {
                 <div className={`accordion-body ${activeIndex === index ? 'active' : ''}`}>
                   <div className='result_wrapper'>
                     {section.content ? (
-                      <div className='imgs_wrapper'>
-                        <div className='img_wrapper'>
-                          <Image src='/imgs/left_leg.png' fill alt='left_leg_img' />
-                        </div>
-                        <div className='img_wrapper'>
-                          <Image src='/imgs/right_leg.png' fill alt='right_leg_img' />
-                        </div>
-                        <div className='img_wrapper'>
-                          <Image src='/imgs/heel.png' fill alt='heel' />
-                        </div>
-                      </div>
+                      section.content
                     ) : (
                       <EmptyContainer>
                         <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
                       </EmptyContainer>
                     )}
-                    <p>{section.content}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          contentLabel='Image Modal'
+          style={{
+            overlay: { backgroundColor: 'rgba(0, 0, 0, 0.75)' },
+            content: {
+              inset: '10%',
+              padding: 0,
+              borderRadius: '10px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          }}
+        >
+          <ModalImage>
+            {selectedImage && (
+              <Image
+                src={selectedImage}
+                layout='intrinsic'
+                objectFit='contain'
+                width={800}
+                height={600}
+                alt='Selected Image'
+              />
+            )}
+          </ModalImage>
+        </Modal>
       </ResultLayout>
     </>
   );
