@@ -2,10 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import { GoArrowLeft } from 'react-icons/go';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Lottie from 'lottie-react';
-import Modal from 'react-modal'; // 모달 임포트
+import Modal from 'react-modal';
 import emptyBoxAnimation from '../../empty-box.json'; // Lottie 애니메이션 파일 경로
 
 const GlobalStyle = createGlobalStyle`
@@ -51,6 +50,7 @@ const ResultLayout = styled.div`
   padding-bottom: 20px;
   padding-top: 5%;
   min-height: 100vh;
+
   .result_section {
     height: 100%;
     width: 60%;
@@ -107,8 +107,8 @@ const ResultLayout = styled.div`
           }
 
           span {
-            font-size: 2.5rem; /* 버튼 크기를 키움 */
-            line-height: 1; /* 버튼 크기를 조정하여 중앙 정렬 */
+            font-size: 2.5rem;
+            line-height: 1;
           }
         }
 
@@ -123,11 +123,11 @@ const ResultLayout = styled.div`
           .result_wrapper {
             .imgs_wrapper {
               display: grid;
-              grid-template-columns: 1fr 1fr; /* 두 개의 이미지를 나란히 표시 */
+              grid-template-columns: 1fr 1fr;
               gap: 2rem;
 
               .img_wrapper {
-                cursor: pointer; /* 이미지를 클릭할 수 있도록 변경 */
+                cursor: pointer;
                 img {
                   position: relative !important;
                   border-radius: 8px;
@@ -163,6 +163,23 @@ const ResultLayout = styled.div`
       }
     }
   }
+
+  .chatgpt_button {
+    margin-top: 2rem;
+    padding: 2rem 4rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: black;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: #000000be;
+    }
+  }
 `;
 
 const EmptyContainer = styled.div`
@@ -176,12 +193,12 @@ const ModalImage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* 모달 창의 높이를 100%로 설정 */
+  height: 100%;
   img {
     max-width: 100%;
     max-height: 100%;
-    width: auto; /* 이미지 비율 유지 */
-    height: auto; /* 이미지 비율 유지 */
+    width: auto;
+    height: auto;
     border-radius: 8px;
   }
 `;
@@ -193,7 +210,7 @@ const Result = () => {
   const router = useRouter();
 
   useEffect(() => {
-    setActiveIndex(0); // 첫 번째 아코디언 항목을 기본으로 활성화
+    setActiveIndex(0);
   }, []);
 
   const toggleAccordion = (index: number) => {
@@ -208,6 +225,10 @@ const Result = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedImage(null);
+  };
+
+  const handleChatGPTButtonClick = () => {
+    router.push('/gpt');
   };
 
   const sections = [
@@ -242,7 +263,7 @@ const Result = () => {
               <Image src='/imgs/abc-walk101Logo.png' fill alt='abc-walk101Logo' />
             </Link>
           </div>
-          <p className='text'>고객님의 분석 결과를 확인 후, 알맞는 신발을 추천해주세요.</p>
+          <p className='text'>고객님의 분석 결과를 확인 후, 알맞은 신발을 추천해주세요.</p>
           <div className='accordion'>
             {sections.map((section, index) => (
               <div key={index} className='accordion-item'>
@@ -264,7 +285,12 @@ const Result = () => {
               </div>
             ))}
           </div>
+
+          <button className='chatgpt_button' onClick={handleChatGPTButtonClick}>
+            Chat GPT 진단받기
+          </button>
         </div>
+
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
