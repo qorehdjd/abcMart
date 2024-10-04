@@ -1,11 +1,15 @@
-export interface Post {
-  id: string;
-  title: string;
-  content: string;
+export interface PostState {
+  posts: ImagePair[];
+  analysisLoading: Boolean; // 분석 시도중
+  analysisDone: Boolean;
+  analysisError: null | string;
 }
 
-export interface PostState {
-  posts: Post[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
+export interface ImagePair {
+  in: string;
+  out: string;
+}
+
+export interface AnalysisPayload {
+  formData: FormData;
 }

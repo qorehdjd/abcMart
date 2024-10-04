@@ -130,8 +130,16 @@ class pwFindForm_sms(BaseModel):
         return v
 
 
-# 비번 찾기 -> 비번 변경
-class setNewPw(UserBase):
+# 아이디 찾기 결과
+class UserIdForm(BaseModel):
+    username: str
+    email: str
+    phone: str
+    userId: str
+
+
+# 비번 찾기 결과 -> 비번 변경
+class updatePw(BaseModel):
     new_pw1 : str
     new_pw2 : str
     
@@ -151,10 +159,36 @@ class setNewPw(UserBase):
         if password1 and v != password1:
             raise HTTPException(status_code=422, detail="비밀번호가 일치하지 않습니다.")
         return v
-    
-    
-# class resultBase(BaseModel):
-#     userId: str
-#     custom_id: str
-#     custom_size: str
-#     content: str
+
+# 이미지 분석
+class resultBase(BaseModel):
+    id : int
+    userId: str
+    LtSupe : str
+    RtSupe : str
+    LtSupeInUrl : str
+    LtSupeOutUrl : str
+    RtSupeInUrl : str
+    RtsupeOutUrl : str
+    LtMedi : str
+    RtMedi : str
+    LtMediInUrl: str
+    LtMediOutUrl: str
+    RtMediInUrl : str
+    RtMediOutUrl : str
+    LtAnkl : str
+    RtAnkl : str
+    LtAnklInUrl : str
+    LtAnklOutUrl : str
+    RtAnklInUrl : str
+    RtAnklOutUrl : str
+    Bla : str
+    blaInUrl : str
+    blaOutUrl : str
+
+
+# gpt 분석
+class gptBase(BaseModel):
+    userId :str 
+    custom_id: str
+    content: str

@@ -11,14 +11,15 @@ import { analysis } from '../../reducers/post/postSlice';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f3d3f, #255597);
-  padding: 40px 20px;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  padding: 20px;
   transition: background-color 0.5s ease;
 
   @media (max-width: 768px) {
-    padding: 20px 10px;
+    padding: 10px;
   }
 `;
 
@@ -43,76 +44,14 @@ const slideIn = keyframes`
 `;
 
 const Title = styled.h1`
-  font-size: 3em;
-  color: #ffffff;
-  margin-bottom: 40px;
+  font-size: 2.5em;
+  color: #334e68;
+  margin-bottom: 30px;
   animation: ${fadeIn} 1s ease-in;
 
   @media (max-width: 768px) {
-    font-size: 2.2em;
+    font-size: 2em;
     margin-bottom: 20px;
-  }
-`;
-
-const IconBar = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-`;
-
-const FootIconWrapper = styled.div<{ selected: boolean }>`
-  width: 75px;
-  height: 75px;
-  margin: 5px;
-  /* background-color: gray; */
-  /* border: 1px solid black; */
-  //border-radius: 50%;
-  overflow: hidden; /* 이미지가 부모를 벗어나지 않도록 설정 */
-  cursor: pointer;
-  transition: border 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-  }
-
-  @media (max-width: 380px) {
-    width: 30px;
-    height: 30px;
-  }
-`;
-
-const FootIcon = styled.img<{ selected: boolean }>`
-  width: 75%;
-  margin: 5px;
-  /* border: ${({ selected }) => (selected ? '3px solid #007bff' : '2px solid transparent')}; */
-  cursor: pointer;
-  transition: border 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  object-fit: cover; /* 추가된 속성 */
-
-  &:hover {
-    transform: scale(1.2);
-  }
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-
-    &:hover {
-      transform: scale(1.1);
-    }
-  }
-
-  @media (max-width: 380px) {
-    width: 30px;
-    height: 30px;
-    &:hover {
-      transform: scale(1.1);
-    }
   }
 `;
 
@@ -125,8 +64,6 @@ const Card = styled.div`
   width: 100%;
   animation: ${slideIn} 0.5s ease-in-out;
   padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -137,6 +74,9 @@ const Card = styled.div`
 const Section = styled.div`
   display: flex;
   padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   align-items: center;
   margin-bottom: 20px;
 
@@ -145,7 +85,9 @@ const Section = styled.div`
   }
 
   @media (max-width: 768px) {
+    flex-direction: row;
     padding: 10px;
+    justify-content: center;
     margin-bottom: 10px;
   }
 `;
@@ -157,7 +99,7 @@ const LeftSection = styled.div`
   align-items: center;
   justify-content: center;
   padding: 20px;
-  //height: 400px;
+  height: 400px;
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -168,7 +110,6 @@ const LeftSection = styled.div`
 `;
 
 const ExampleContainer = styled.div`
-  box-sizing: border-box;
   background-color: #f6f9fc;
   height: auto;
   display: flex;
@@ -176,29 +117,21 @@ const ExampleContainer = styled.div`
   justify-content: center;
   border-radius: 10px;
   border: 1px solid #ccc;
-  //aspect-ratio: 10/12;
-  height: 430px;
+  aspect-ratio: 10/12;
+  height: 300px;
   width: 300px;
 
   @media (max-width: 768px) {
-    width: 200px;
-    height: 280px;
-    aspect-ratio: 1/1.4;
-    //height: auto;
-  }
-  @media (max-width: 500px) {
     width: 140px;
-    height: 200px;
+    height: auto;
   }
   @media (max-width: 380px) {
     width: 100px;
-    height: 140px;
+    height: auto;
   }
 `;
 
 const ExampleImage = styled.img`
-  //height: 430px;
-  //width: 300px;
   width: 100%;
   height: 100%;
   border-radius: 10px;
@@ -206,8 +139,8 @@ const ExampleImage = styled.img`
 
 const ExampleLabel = styled.div`
   font-size: 16px;
+  color: #627d98;
   margin-top: 15px;
-  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,21 +184,16 @@ const UploadArea = styled.div<UploadAreaProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  //aspect-ratio: 10/12;
-  //height: 430px;
-  //width: 300px;
+  aspect-ratio: 10/12;
+  height: 300px;
+  width: 300px;
   @media (max-width: 768px) {
-    width: 200px;
-    height: 280px;
-    aspect-ratio: 1 / 1.4;
-  }
-  @media (max-width: 500px) {
     width: 140px;
-    height: 200px;
+    height: auto;
   }
   @media (max-width: 380px) {
     width: 100px;
-    height: 140px;
+    height: auto;
   }
 `;
 
@@ -305,24 +233,10 @@ const PreviewContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  //height: 100%;
-  //width: 100%;
-  height: 430px;
-  width: 300px;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
-  //aspect-ratio: 10/12;
-  @media (max-width: 768px) {
-    width: 200px;
-    height: 280px;
-  }
-  @media (max-width: 500px) {
-    width: 140px;
-    height: 200px;
-  }
-  @media (max-width: 380px) {
-    width: 100px;
-    height: 140px;
-  }
+  aspect-ratio: 10/12;
 `;
 
 const PreviewImage = styled.img`
@@ -346,25 +260,22 @@ const CameraIcon = styled.img`
 const AnalyzeButton = styled.button`
   background-color: #007bff;
   color: #fff;
-  padding: 15px 50px;
+  padding: 15px 40px;
   border: none;
-  border-radius: 25px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  margin: 30px auto;
+  transition: background-color 0.3s ease;
+  margin: 20px auto;
   display: block;
-  font-size: 1.4em;
-  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
 
   &:hover {
     background-color: #0056b3;
-    transform: scale(1.05);
   }
 
   @media (max-width: 768px) {
-    padding: 10px 30px;
-    font-size: 1em;
-    margin: 15px auto;
+    padding: 10px 20px;
+    font-size: 14px;
+    margin: 10px auto;
   }
 `;
 
@@ -409,16 +320,6 @@ const LoadingContainer = styled.div`
 const LottieContainer = styled.div`
   width: 300px;
   height: 300px;
-
-  @media (max-width: 768px) {
-    width: 200px;
-    height: 200px;
-  }
-
-  @media (max-width: 380px) {
-    width: 150px;
-    height: 150px;
-  }
 `;
 
 const LoadingText = styled.div`
@@ -434,7 +335,6 @@ const LoadingText = styled.div`
 `;
 
 const Analyze: React.FC = () => {
-  const [selectedFoot, setSelectedFoot] = useState<number>(0); // 0 ~ 6
   const [previews, setPreviews] = useState<(string | null)[]>(Array(7).fill(null));
   const [files, setFiles] = useState<(File | null)[]>(Array(7).fill(null));
   const [modalImage, setModalImage] = useState<string | null>(null);
@@ -442,30 +342,6 @@ const Analyze: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const { analysisLoading } = useSelector((state: RootState) => state.post);
-
-  const handleFootSelect = (index: number) => {
-    setSelectedFoot(index);
-  };
-
-  const footIcons = [
-    '/imgs/icons/foot1.png',
-    '/imgs/icons/foot2.png',
-    '/imgs/icons/foot3.png',
-    '/imgs/icons/foot4.png',
-    '/imgs/icons/foot5.png',
-    '/imgs/icons/foot6.png',
-    '/imgs/icons/foot7.png',
-  ];
-
-  const exampleImages = [
-    '/imgs/picture/left-foot.png',
-    '/imgs/picture/right-foot.png',
-    '/imgs/picture/left-heel.png',
-    '/imgs/picture/right-heel.png',
-    '/imgs/examples/foot5_example.png',
-    '/imgs/examples/foot6_example.png',
-    '/imgs/examples/foot7_example.png',
-  ];
 
   console.log('files', files);
 
@@ -507,13 +383,13 @@ const Analyze: React.FC = () => {
     console.log('formData', formData);
     try {
       console.log('files', files);
-      //백엔드로 요청 보내기 (예: POST 요청)
-      // const response = await axios.post('http://localhost:8000/user/analyze', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     //'Content-Type': 'application/json',
-      //   },
-      // });
+      // 백엔드로 요청 보내기 (예: POST 요청)
+      //const response = await axios.post('http://localhost:8000/user/analyze', formData, {
+      //  headers: {
+      //    'Content-Type': 'multipart/form-data',
+      //    //'Content-Type': 'application/json',
+      //  },
+      //});
       // analysis Thunk 호출
       const resultAction = await dispatch(analysis({ formData }));
 
@@ -541,6 +417,7 @@ const Analyze: React.FC = () => {
         </LottieContainer>
         <LoadingText>
           <span>분석 중입니다</span>
+          <br />
         </LoadingText>
       </LoadingContainer>
     );
@@ -549,54 +426,39 @@ const Analyze: React.FC = () => {
   return (
     <Container>
       <Title>촬영하기</Title>
-      <IconBar>
-        {footIcons.map((icon, index) => (
-          <FootIconWrapper
-            key={index}
-            selected={selectedFoot === index}
-            onClick={() => handleFootSelect(index)}
-            role='button'
-            tabIndex={0}
-            aria-pressed={selectedFoot === index}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') handleFootSelect(index);
-            }}
-          >
-            <FootIcon src={icon} alt={`발 모양 ${index + 1}`} />
-          </FootIconWrapper>
-        ))}
-      </IconBar>
       <Card>
-        <Section>
-          <LeftSection>
-            <ExampleContainer>
-              <ExampleImage src={exampleImages[selectedFoot]} alt={`예시 사진 ${selectedFoot + 1}`} />
-            </ExampleContainer>
-            <ExampleLabel>예시</ExampleLabel>
-          </LeftSection>
-          <RightSection>
-            <UploadArea hasImage={!!previews[selectedFoot]}>
-              <PreviewContainer>
-                {previews[selectedFoot] ? (
-                  <PreviewImage
-                    src={previews[selectedFoot]!}
-                    alt={`미리보기 ${selectedFoot + 1}`}
-                    onClick={() => openModal(previews[selectedFoot]!)}
-                  />
-                ) : (
-                  <CameraIcon src='/imgs/icon-photo.png' alt='카메라 아이콘' />
-                )}
-              </PreviewContainer>
-            </UploadArea>
-            <UploadButton htmlFor={`file-upload-${selectedFoot}`}>사진 업로드</UploadButton>
-            <UploadInput
-              type='file'
-              id={`file-upload-${selectedFoot}`}
-              accept='image/*'
-              onChange={(event) => handleFileChange(event, selectedFoot)}
-            />
-          </RightSection>
-        </Section>
+        {[...Array(7)].map((_, index) => (
+          <Section key={index}>
+            <LeftSection>
+              <ExampleContainer>
+                <ExampleImage src={`/imgs/picture/right-heel.png`} alt={`예시 사진 ${index + 1}`} />
+              </ExampleContainer>
+              <ExampleLabel>예시</ExampleLabel>
+            </LeftSection>
+            <RightSection>
+              <UploadArea hasImage={!!previews[index]}>
+                <PreviewContainer>
+                  {previews[index] ? (
+                    <PreviewImage
+                      src={previews[index]!}
+                      alt={`미리보기 ${index + 1}`}
+                      onClick={() => openModal(previews[index]!)}
+                    />
+                  ) : (
+                    <CameraIcon src='/imgs/icon-photo.png' alt='카메라 아이콘' />
+                  )}
+                </PreviewContainer>
+              </UploadArea>
+              <UploadButton htmlFor={`file-upload-${index}`}>사진 업로드</UploadButton>
+              <UploadInput
+                type='file'
+                id={`file-upload-${index}`}
+                accept='image/*'
+                onChange={(event) => handleFileChange(event, index)}
+              />
+            </RightSection>
+          </Section>
+        ))}
         <AnalyzeButton onClick={handleAnalyzeClick}>분석하기</AnalyzeButton>
       </Card>
       {modalImage && (

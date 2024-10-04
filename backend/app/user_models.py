@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from app.user_database import Base
 
@@ -16,11 +16,40 @@ class User(Base):
     hashed_pw = Column(String)
     created_at = Column(DateTime, default=datetime.now)
 
-    # 컬럼 연결시 사용
-    # items = relationship("Item", back_populates="owner")
+    # # 테이블간 연결 생성
+    # userId = relationship("result", back_populates="owner")
 
 
+# 분석 결과
+class result(Base):
+    __tablename__ = "result"
+    id = Column(Integer, primary_key=True, index=True)
+    userId = Column(Integer, primary_key=True)
+    LtSupe = Column(String)
+    RtSupe = Column(String)
+    LtSupeInUrl = Column(String)
+    LtSupeOutUrl = Column(String)
+    RtSupeInUrl = Column(String)
+    RtsupeOutUrl = Column(String)
+    LtMedi = Column(String)
+    RtMedi = Column(String)
+    LtMediInUrl = Column(String)
+    LtMediOutUrl = Column(String)
+    RtMediInUrl = Column(String)
+    RtMediOutUrl = Column(String)
+    LtAnkl = Column(String)
+    RtAnkl = Column(String)
+    LtAnklInUrl = Column(String)
+    LtAnklOutUrl = Column(String)
+    RtAnklInUrl = Column(String)
+    RtAnklOutUrl = Column(String)
+    Bla = Column(String)
+    blaInUrl = Column(String)
+    blaOutUrl = Column(String)
+    created_at = Column(DateTime, default=datetime.now)
 
+
+# gpt 분석
 # class gptScript(Base):
 #     content: str
 

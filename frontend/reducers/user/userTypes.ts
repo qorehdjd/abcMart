@@ -1,13 +1,12 @@
 export interface User {
-  id: string;
-  name: string;
-  email: string;
+  userId: string;
 }
 
 export interface UserState {
   me: User | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
+  logInLoading: Boolean; // 로그인 시도중
+  logInDone: Boolean;
+  logInError: null | string;
 }
 
 export interface Credentials {

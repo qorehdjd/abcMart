@@ -274,34 +274,35 @@ const LoginContainer = styled.div`
 const Login: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.user);
+  const { logInLoading, logInDone, logInError } = useAppSelector((state) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   // 임시
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    router.push('/survey');
-  }, []);
+  // const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   router.push('/survey');
+  // }, []);
 
-  // const handleSubmit = useCallback(
-  //   (e: React.FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault();
-  //     dispatch(login({ userId: username, password }));
-  //   },
-  //   [dispatch, username, password],
-  // );
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      dispatch(login({ userId: username, password }));
+    },
+    [dispatch, username, password],
+  );
 
-  // useEffect(() => {
-  //   if (status === 'succeeded') {
-  //     router.push('/survey');
-  //   }
-  // }, [status, router]);
+  useEffect(() => {
+    // if (logInDone === true) {
+    //   router.push('/survey');
+    // }
+    router.push('survey');
+  }, [logInDone, router]);
 
-  // // 페이지가 마운트될 때 에러 상태 초기화
-  // useEffect(() => {
-  //   dispatch(clearError());
-  // }, [dispatch]);
+  // 페이지가 마운트될 때 에러 상태 초기화
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <>
@@ -337,11 +338,11 @@ const Login: React.FC = () => {
               <div className='persist-login-wrapper'>
                 <input id='persist-login' type='checkbox' />
                 <label htmlFor='persist-login'>로그인 상태 유지하기</label>
-                {error && <div className='error-message'>{error}</div>}
+                {logInError && <div className='error-message'>{logInError}</div>}
               </div>
               <div className='login-btn-wrapper'>
-                <button className='login-btn' type='submit' disabled={status === 'loading'}>
-                  {status === 'loading' ? '로딩 중...' : '로그인'}
+                <button className='login-btn' type='submit' disabled={logInLoading === true}>
+                  {logInLoading === true ? '로딩 중...' : '로그인'}
                 </button>
               </div>
             </form>

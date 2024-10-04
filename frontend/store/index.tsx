@@ -1,6 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
+import axios from 'axios';
+
 import userReducer from '../reducers/user/userSlice';
 import postReducer from '../reducers/post/postSlice';
+
+//axios.defaults.baseURL = 'https:localhost:8000';
+axios.defaults.withCredentials = true;
 
 const store = configureStore({
   reducer: {

@@ -14,8 +14,6 @@ app = FastAPI()
 
 # middleware
 origins = [
-    "http://localhost:3000", 
-    "http://127.0.0.1:3000"
     "*"
 ]
 
@@ -31,6 +29,8 @@ app.add_middleware(
 app.include_router(router, tags=['user_create'])
 app.include_router(router, tags=['login'])
 app.include_router(router, tags=['logout'])
+app.include_router(router, tags=['analyze'])
+app.include_router(router, tags=['create_gpt'])
 
 
 
