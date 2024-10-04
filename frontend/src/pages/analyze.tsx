@@ -89,7 +89,7 @@ const FootIconWrapper = styled.div<{ selected: boolean }>`
 const FootIcon = styled.img<{ selected: boolean }>`
   width: 75%;
   margin: 5px;
-  /* border: ${({ selected }) => (selected ? '3px solid #007bff' : '2px solid transparent')}; */
+  // border: ${({ selected }) => (selected ? '3px solid #007bff' : '2px solid transparent')};
   cursor: pointer;
   transition: border 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   object-fit: cover; /* 추가된 속성 */
@@ -562,7 +562,7 @@ const Analyze: React.FC = () => {
               if (e.key === 'Enter') handleFootSelect(index);
             }}
           >
-            <FootIcon src={icon} alt={`발 모양 ${index + 1}`} />
+            <FootIcon src={icon} alt={`발 모양 ${index + 1}`} selected={selectedFoot === index} />
           </FootIconWrapper>
         ))}
       </IconBar>
