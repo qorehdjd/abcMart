@@ -492,8 +492,8 @@ const Analyze: React.FC = () => {
   const exampleImages = [
     'imgs/test/test02.jpg',
     'imgs/test/test03.jpg',
-    'imgs/test/test04.jpg',
     'imgs/test/test05.jpg',
+    'imgs/test/test04.jpg',
     'imgs/test/test06.jpg',
     'imgs/test/test07.jpg',
     'imgs/test/test01.png',
