@@ -45,12 +45,12 @@ const slideIn = keyframes`
 const Title = styled.h1`
   font-size: 3em;
   color: #ffffff;
-  margin-bottom: 40px;
+  //margin-bottom: 40px;
   animation: ${fadeIn} 1s ease-in;
 
   @media (max-width: 768px) {
-    font-size: 2.2em;
-    margin-bottom: 20px;
+    font-size: 1.7em;
+    margin-bottom: 0px;
   }
 `;
 
@@ -59,12 +59,15 @@ const IconBar = styled.div`
   justify-content: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  @media (max-width: 768px) {
+    margin-bottom: 10px;
+  }
 `;
 
 const FootIconWrapper = styled.div<{ selected: boolean }>`
   width: 75px;
-  height: 75px;
-  margin: 5px;
+  //height: 75px;
+  //margin: 5px;
   /* background-color: gray; */
   /* border: 1px solid black; */
   //border-radius: 50%;
@@ -77,17 +80,22 @@ const FootIconWrapper = styled.div<{ selected: boolean }>`
 
   @media (max-width: 768px) {
     width: 40px;
-    height: 40px;
+    //height: 40px;
   }
 
   @media (max-width: 380px) {
     width: 30px;
-    height: 30px;
+    //height: 30px;
   }
 `;
 
-const FootIcon = styled.img<{ selected: boolean }>`
-  width: 75%;
+const FootIcon = styled.img<{ selected: boolean; src: string }>`
+  width: ${({ src }) =>
+    src === '/imgs/icons/foot1.png' || src === '/imgs/icons/foot2.png'
+      ? '85%'
+      : src === '/imgs/icons/foot7.png'
+      ? '70%'
+      : '55%'};
   margin: 5px;
   // border: ${({ selected }) => (selected ? '3px solid #007bff' : '2px solid transparent')};
   cursor: pointer;
@@ -99,8 +107,8 @@ const FootIcon = styled.img<{ selected: boolean }>`
   }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    // width: 40px;
+    // height: 40px;
 
     &:hover {
       transform: scale(1.1);
@@ -108,8 +116,8 @@ const FootIcon = styled.img<{ selected: boolean }>`
   }
 
   @media (max-width: 380px) {
-    width: 30px;
-    height: 30px;
+    //width: 30px;
+    //height: 30px;
     &:hover {
       transform: scale(1.1);
     }
@@ -139,7 +147,7 @@ const Section = styled.div`
   padding: 20px;
   align-items: center;
   margin-bottom: 20px;
-
+  justify-content: center;
   &:last-child {
     margin-bottom: 0;
   }
@@ -177,7 +185,8 @@ const ExampleContainer = styled.div`
   border-radius: 10px;
   border: 1px solid #ccc;
   //aspect-ratio: 10/12;
-  height: 430px;
+  //height: 430px;
+  height: 315px;
   width: 300px;
 
   @media (max-width: 768px) {
@@ -187,12 +196,16 @@ const ExampleContainer = styled.div`
     //height: auto;
   }
   @media (max-width: 500px) {
-    width: 140px;
-    height: 200px;
+    //width: 140px;
+    //height: 200px;
+    width: 170px;
+    height: 190px;
   }
   @media (max-width: 380px) {
-    width: 100px;
-    height: 140px;
+    //width: 100px;
+    //height: 140px;
+    width: 115px;
+    height: 130px;
   }
 `;
 
@@ -257,15 +270,19 @@ const UploadArea = styled.div<UploadAreaProps>`
   @media (max-width: 768px) {
     width: 200px;
     height: 280px;
-    aspect-ratio: 1 / 1.4;
+    //aspect-ratio: 1 / 1.4;
   }
   @media (max-width: 500px) {
-    width: 140px;
-    height: 200px;
+    //width: 140px;
+    //height: 200px;
+    width: 170px;
+    height: 190px;
   }
   @media (max-width: 380px) {
-    width: 100px;
-    height: 140px;
+    //width: 100px;
+    //height: 140px;
+    width: 115px;
+    height: 130px;
   }
 `;
 
@@ -307,7 +324,8 @@ const PreviewContainer = styled.div`
   justify-content: center;
   //height: 100%;
   //width: 100%;
-  height: 430px;
+  //height: 430px;
+  height: 315px;
   width: 300px;
   overflow: hidden;
   //aspect-ratio: 10/12;
@@ -316,12 +334,16 @@ const PreviewContainer = styled.div`
     height: 280px;
   }
   @media (max-width: 500px) {
-    width: 140px;
-    height: 200px;
+    //width: 140px;
+    //height: 200px;
+    width: 170px;
+    height: 190px;
   }
   @media (max-width: 380px) {
-    width: 100px;
-    height: 140px;
+    //width: 100px;
+    //height: 140px;
+    width: 115px;
+    height: 130px;
   }
 `;
 
@@ -450,21 +472,31 @@ const Analyze: React.FC = () => {
   const footIcons = [
     '/imgs/icons/foot1.png',
     '/imgs/icons/foot2.png',
-    '/imgs/icons/foot3.png',
-    '/imgs/icons/foot4.png',
-    '/imgs/icons/foot5.png',
-    '/imgs/icons/foot6.png',
+    '/imgs/icons/foot8.png',
+    '/imgs/icons/foot9.png',
+    '/imgs/icons/foot11.png',
+    '/imgs/icons/foot10.png',
     '/imgs/icons/foot7.png',
   ];
 
+  // const exampleImages = [
+  //   '/imgs/picture/left-foot.png',
+  //   '/imgs/picture/right-foot.png',
+  //   '/imgs/picture/left-heel.png',
+  //   '/imgs/picture/right-heel.png',
+  //   '/imgs/examples/foot5_example.png',
+  //   '/imgs/examples/foot6_example.png',
+  //   '/imgs/examples/foot7_example.png',
+  // ];
+
   const exampleImages = [
-    '/imgs/picture/left-foot.png',
-    '/imgs/picture/right-foot.png',
-    '/imgs/picture/left-heel.png',
-    '/imgs/picture/right-heel.png',
-    '/imgs/examples/foot5_example.png',
-    '/imgs/examples/foot6_example.png',
-    '/imgs/examples/foot7_example.png',
+    'imgs/test/test02.jpg',
+    'imgs/test/test03.jpg',
+    'imgs/test/test04.jpg',
+    'imgs/test/test05.jpg',
+    'imgs/test/test06.jpg',
+    'imgs/test/test07.jpg',
+    'imgs/test/test01.png',
   ];
 
   console.log('files', files);

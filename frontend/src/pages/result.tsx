@@ -233,7 +233,7 @@ const Result = () => {
 
   const sections = [
     {
-      title: '발 내측',
+      title: '왼쪽 발 내측',
       content: (
         <div className='imgs_wrapper'>
           <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner.jpg')}>
@@ -245,12 +245,12 @@ const Result = () => {
         </div>
       ),
     },
-    { title: '발 외측', content: '' },
-    { title: '발 뒤꿈치', content: '' },
-    { title: '다리', content: '' },
-    { title: '섹션5', content: '' },
-    { title: '섹션6', content: '' },
-    { title: '섹션7', content: '' },
+    { title: '오른쪽 발 내측', content: '' },
+    { title: '왼쪽 발 뒤', content: '' },
+    { title: '오른쪽 발 뒤', content: '' },
+    { title: '왼쪽 발 위', content: '' },
+    { title: '오른쪽 발 위', content: '' },
+    { title: '양발 정면', content: '' },
   ];
 
   return (
