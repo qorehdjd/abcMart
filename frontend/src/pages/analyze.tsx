@@ -43,7 +43,7 @@ const slideIn = keyframes`
 `;
 
 const Title = styled.h1`
-  font-size: 3em;
+  font-size: 2.5em;
   color: #ffffff;
   //margin-bottom: 40px;
   animation: ${fadeIn} 1s ease-in;

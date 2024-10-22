@@ -5,6 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { FaRegCheckSquare, FaCheckSquare } from 'react-icons/fa';
 import { GoArrowRight } from 'react-icons/go';
 import styled, { createGlobalStyle } from 'styled-components';
+import axios from 'axios'; // axios를 이용해 서버 통신
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 600px) {
@@ -22,27 +23,6 @@ const SurveyContainer = styled.div`
   justify-content: center;
   padding: 2rem 0;
 
-  @keyframes bounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-
-  @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   .survey-wrapper {
     height: 100%;
     display: flex;
@@ -51,12 +31,11 @@ const SurveyContainer = styled.div`
     justify-content: center;
     font-size: 2rem;
     width: fit-content;
-    animation: fadeUp 1s ease-out;
 
     .title {
       color: #777;
       text-align: center;
-      margin-bottom: 5rem;
+      margin-bottom: 2rem;
     }
 
     .survey-image {
@@ -65,7 +44,6 @@ const SurveyContainer = styled.div`
       img {
         width: 109px;
         height: 121px;
-        animation: bounce 2s infinite;
       }
     }
 
@@ -75,6 +53,17 @@ const SurveyContainer = styled.div`
       img {
         width: 380px;
         height: 50px;
+      }
+    }
+
+    .nickname-input {
+      margin-bottom: 2rem;
+      input {
+        width: 300px;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 1.2rem;
       }
     }
 
@@ -92,7 +81,6 @@ const SurveyContainer = styled.div`
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
-        animation: fadeUp 1s ease-out;
 
         &:hover,
         &.selected {
@@ -109,7 +97,6 @@ const SurveyContainer = styled.div`
       justify-content: flex-end;
       align-items: center;
       margin-top: 1rem;
-      animation: fadeUp 1s ease-out;
 
       .next-button {
         display: flex;
@@ -129,51 +116,11 @@ const SurveyContainer = styled.div`
       }
     }
   }
-
-  @media screen and (max-width: 600px) {
-    .survey-wrapper {
-      width: 90%;
-
-      .survey-image {
-        width: 100%;
-        justify-content: center;
-        img {
-          width: 25%;
-          height: fit-content !important;
-        }
-      }
-
-      .logo {
-        width: 100%;
-        justify-content: center;
-        a {
-          display: flex;
-          justify-content: center;
-          img {
-            width: 80%;
-            height: fit-content !important;
-          }
-        }
-      }
-
-      .title {
-        margin-bottom: 5rem;
-      }
-
-      .next-button-section {
-        .next-button {
-          svg {
-            width: 3rem;
-            height: 3rem;
-          }
-        }
-      }
-    }
-  }
 `;
 
 const Survey = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [nickname, setNickname] = useState(''); // 닉네임 상태 추가
   const router = useRouter();
 
   const handleItemClick = useCallback((index: number) => {
@@ -184,9 +131,24 @@ const Survey = () => {
     );
   }, []);
 
-  const handleNextClick = useCallback(() => {
-    router.push('/picture');
-  }, [router]);
+  const handleNextClick = useCallback(async () => {
+    if (!nickname.trim()) {
+      // 닉네임이 없을 경우 경고창 띄우기
+      alert('닉네임을 입력해주세요');
+      return;
+    }
+
+    try {
+      // 서버로 닉네임과 선택한 설문 데이터 전송
+      // await axios.post('/api/survey', {
+      //   nickname,
+      //   selectedItems,
+      // });
+      router.push('/picture');
+    } catch (error) {
+      console.error('Error sending survey data', error);
+    }
+  }, [nickname, selectedItems, router]);
 
   const surveyItems = [
     '신발을 신을 때 발목에 통증이 심하다',
@@ -212,6 +174,15 @@ const Survey = () => {
             WALK101과 ABC-MART와 함께 고객님의 발과 발목의 상태를
             <br />
             더욱 쉽고 명확하게 분석해보세요!
+          </div>
+          {/* 닉네임 입력란 추가 */}
+          <div className='nickname-input'>
+            <input
+              type='text'
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder='닉네임을 입력하세요'
+            />
           </div>
           <ul>
             {surveyItems.map((item, index) => (
