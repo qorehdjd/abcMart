@@ -158,6 +158,23 @@ const Section = styled.div`
   }
 `;
 
+// const LeftSection = styled.div`
+//   flex: 1;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   padding: 20px;
+//   //height: 400px;
+
+//   @media (max-width: 768px) {
+//     padding: 10px;
+//     height: auto;
+//     justify-content: flex-start;
+//     align-items: center;
+//   }
+// `;
+
 const LeftSection = styled.div`
   flex: 1;
   display: flex;
@@ -165,47 +182,84 @@ const LeftSection = styled.div`
   align-items: center;
   justify-content: center;
   padding: 20px;
-  //height: 400px;
+  height: 100%; // 부모 영역의 높이를 꽉 채움
 
   @media (max-width: 768px) {
     padding: 10px;
-    height: auto;
     justify-content: flex-start;
     align-items: center;
   }
 `;
 
+// const ExampleContainer = styled.div`
+//   box-sizing: border-box;
+//   background-color: #f6f9fc;
+//   height: auto;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   border-radius: 10px;
+//   border: 1px solid #ccc;
+//   //aspect-ratio: 10/12;
+//   //height: 430px;
+//   /* height: 315px; */
+//   /* width: 300px; */
+
+//   @media (max-width: 768px) {
+//     width: 200px;
+//     height: 280px;
+//     aspect-ratio: 1/1.4;
+//     //height: auto;
+//   }
+//   @media (max-width: 500px) {
+//     //width: 140px;
+//     //height: 200px;
+//     width: 170px;
+//     height: 190px;
+//   }
+//   @media (max-width: 380px) {
+//     //width: 100px;
+//     //height: 140px;
+//     width: 115px;
+//     height: 130px;
+//   }
+// `;
+
 const ExampleContainer = styled.div`
-  box-sizing: border-box;
+  flex-grow: 1; // 남은 공간을 채움
+  width: 100%; // 가로를 꽉 채움
+  height: 100%; // 부모 영역의 높이를 꽉 채움
   background-color: #f6f9fc;
-  height: auto;
+  border-radius: 10px;
+  border: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  //aspect-ratio: 10/12;
-  //height: 430px;
-  height: 315px;
-  width: 300px;
+  overflow: hidden;
+  height: 480px;
+  width: 370px;
+
+  @media (max-width: 925px) {
+    width: 300px;
+    height: auto;
+  }
 
   @media (max-width: 768px) {
     width: 200px;
-    height: 280px;
-    aspect-ratio: 1/1.4;
-    //height: auto;
+    height: auto;
   }
+
   @media (max-width: 500px) {
     //width: 140px;
     //height: 200px;
     width: 170px;
-    height: 190px;
+    height: auto;
   }
   @media (max-width: 380px) {
     //width: 100px;
     //height: 140px;
     width: 115px;
-    height: 130px;
+    height: auto;
   }
 `;
 
@@ -325,25 +379,31 @@ const PreviewContainer = styled.div`
   //height: 100%;
   //width: 100%;
   //height: 430px;
-  height: 315px;
-  width: 300px;
+  height: 480px;
+  width: 370px;
   overflow: hidden;
   //aspect-ratio: 10/12;
+
+  @media (max-width: 925px) {
+    width: 300px;
+    height: 389px;
+  }
+
   @media (max-width: 768px) {
     width: 200px;
-    height: 280px;
+    height: 259px;
   }
   @media (max-width: 500px) {
     //width: 140px;
     //height: 200px;
     width: 170px;
-    height: 190px;
+    height: 220px;
   }
   @media (max-width: 380px) {
     //width: 100px;
     //height: 140px;
     width: 115px;
-    height: 130px;
+    height: 148px;
   }
 `;
 
@@ -496,7 +556,7 @@ const Analyze: React.FC = () => {
     'imgs/test/test04.jpg',
     'imgs/test/test06.jpg',
     'imgs/test/test07.jpg',
-    'imgs/test/test01.png',
+    'imgs/test/test01.jpg',
   ];
 
   console.log('files', files);
