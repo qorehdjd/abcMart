@@ -81,6 +81,21 @@ async def login(userLogin: LoginBase, db: AsyncSession = Depends(get_db)):
 
     return response
 
+# 닉네임 조회
+@router.get("/nickname/{nickname_id}", response_model=dict, 
+        responses={
+            404: {"description": "닉네임을 찾을 수 없음"},
+            500: {"description": "서버 오류"}
+        })
+async def get_nickname(nickname_id: int):
+    try:
+        nickname = await UserService.get_nickname(nickname_id)
+        if nickname:
+            return {"nickname": nickname}
+        else:
+            raise HTTPException(status_code=404, detail=f"ID {nickname_id}에 해당하는 닉네임을 찾을 수 없습니다.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"서버 오류: {str(e)}")
 
 # 로그아웃
 @router.get("/logout")

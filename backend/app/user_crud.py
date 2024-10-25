@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.user_models import User
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from async_lru import alru_cache
+import aiosqlite
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -137,6 +139,33 @@ class UserService:
         return db_user 
     
     
+    @classmethod
+    async def setup_database(cls):
+        async with aiosqlite.connect('data.db') as db:
+            await db.execute('PRAGMA journal_mode = WAL;')
+            await db.execute('''CREATE TABLE IF NOT EXISTS nickname (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nickname TEXT NOT NULL
+            );''')
+            await db.execute('CREATE INDEX IF NOT EXISTS idx_nickname ON nickname(nickname);')
+            await db.commit()
+
+    @classmethod
+    @alru_cache(maxsize=200000)
+    async def get_nickname(cls, nickname_id: int):
+        async with aiosqlite.connect('data.db') as db:
+            await db.execute('PRAGMA journal_mode = WAL;')
+            try:
+                async with db.execute('SELECT nickname FROM nickname WHERE id = ?', (nickname_id,)) as cursor:
+                    result = await cursor.fetchone()
+                    return result[0] if result else None
+            except sqlite3.Error as e:
+                print(f"데이터베이스 쿼리 중 오류 발생: {e}")
+                return None
+
+    @classmethod
+    def clear_cache(cls):
+        cls.get_nickname.cache_clear()
     # gpt 분석 (데이터베이스 저장 여부 확인, 데이터베이스 모델 필요)
     # @classmethod
     # async def gpt_result(cls, userId: str, gpt_result: gptBase, db:AsyncSession):

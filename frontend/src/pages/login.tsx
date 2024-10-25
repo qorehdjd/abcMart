@@ -279,25 +279,25 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
 
   //임시
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    router.push('/survey');
-  }, []);
-
-  //const handleSubmit = useCallback(
-  //  (e: React.FormEvent<HTMLFormElement>) => {
-  //    e.preventDefault();
-  //    dispatch(login({ userId: username, password }));
-  //  },
-  //  [dispatch, username, password],
-  //);
-
-  //useEffect(() => {
-  // if (logInDone === true) {
+  // const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
   //   router.push('/survey');
-  // }
-  //router.push('survey');
-  //}, [logInDone, router]);
+  // }, []);
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      dispatch(login({ userId: username, password }));
+    },
+    [dispatch, username, password],
+  );
+
+  useEffect(() => {
+    if (logInDone === true) {
+      router.push('/survey');
+    }
+    router.push('survey');
+  }, [logInDone, router]);
 
   // 페이지가 마운트될 때 에러 상태 초기화
   useEffect(() => {

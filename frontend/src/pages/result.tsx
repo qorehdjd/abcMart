@@ -6,6 +6,7 @@ import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Lottie from 'lottie-react';
 import Modal from 'react-modal';
 import emptyBoxAnimation from '../../empty-box.json'; // Lottie 애니메이션 파일 경로
+import { useAppSelector } from '../../hooks/hooks';
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 850px) {
@@ -207,8 +208,9 @@ const Result = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const data = useAppSelector((state) => state.post.posts);
   const router = useRouter();
-
+  console.log('data', data);
   useEffect(() => {
     setActiveIndex(0);
   }, []);
@@ -237,10 +239,10 @@ const Result = () => {
       content: (
         <div className='imgs_wrapper'>
           <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner.jpg')}>
-            <Image src='/imgs/result/inner/inner.jpg' fill alt='inner_foot_img1' />
+            <Image src={data.in} fill alt='inner_foot_img1' />
           </div>
           <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner_result.jpg')}>
-            <Image src='/imgs/result/inner/inner_result.jpg' fill alt='inner_foot_img2' />
+            <Image src={data.out} fill alt='inner_foot_img2' />
           </div>
         </div>
       ),
