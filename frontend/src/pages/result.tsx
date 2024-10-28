@@ -6,7 +6,6 @@ import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Lottie from 'lottie-react';
 import Modal from 'react-modal';
 import emptyBoxAnimation from '../../empty-box.json'; // Lottie 애니메이션 파일 경로
-import { useAppSelector } from '../../hooks/hooks';
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 850px) {
@@ -42,8 +41,8 @@ const collapse = keyframes`
   }
 `;
 
-const ResultLayout = styled.div<{ isLoaded: boolean }>`
-  display: ${({ isLoaded }) => (isLoaded ? 'flex' : 'none')};
+const ResultLayout = styled.div`
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
@@ -208,17 +207,7 @@ const Result = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false); // 로딩 상태 관리 추가
-  const data = useAppSelector((state) => state.post.posts);
   const router = useRouter();
-  console.log('data', data);
-
-  useEffect(() => {
-    if (data && data.in && data.out) {
-      // 데이터가 제대로 로드되었는지 확인 후 로딩 완료로 설정
-      setIsLoaded(true);
-    }
-  }, [data]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -247,11 +236,11 @@ const Result = () => {
       title: '왼쪽 발 내측',
       content: (
         <div className='imgs_wrapper'>
-          <div className='img_wrapper' onClick={() => openModal(data.in)}>
-            <Image src={data.in} layout='responsive' alt='inner_foot_img1' priority width={400} height={300} />
+          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner.jpg')}>
+            <Image src='/imgs/result/inner/inner.jpg' fill alt='inner_foot_img1' />
           </div>
-          <div className='img_wrapper' onClick={() => openModal(data.out)}>
-            <Image src={data.out} layout='responsive' alt='inner_foot_img2' priority width={400} height={300} />
+          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner_result.jpg')}>
+            <Image src='/imgs/result/inner/inner_result.jpg' fill alt='inner_foot_img2' />
           </div>
         </div>
       ),
@@ -264,15 +253,10 @@ const Result = () => {
     { title: '양발 정면', content: '' },
   ];
 
-  if (!isLoaded) {
-    // 준비 완료 전에는 로딩 애니메이션 표시
-    return null;
-  }
-
   return (
     <>
       <GlobalStyle />
-      <ResultLayout isLoaded={isLoaded}>
+      <ResultLayout>
         <div className='result_section'>
           <div className='logo'>
             <Link href='/'>
