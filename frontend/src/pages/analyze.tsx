@@ -619,7 +619,6 @@ const Analyze: React.FC = () => {
         // 에러 처리 (사용자에게 알림 등을 제공)
       }
       // 결과 페이지로 이동 (백엔드에서 받은 데이터를 결과 페이지로 전달 가능)
-      router.push('/result');
     } catch (error) {
       console.error('Error uploading images:', error);
       // 에러 처리 (사용자에게 알림 등을 제공)

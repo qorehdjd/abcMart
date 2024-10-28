@@ -68,11 +68,12 @@ const MainContainer = styled.div`
 
       h1 {
         font-size: 7rem;
-        font-weight: 600;
+        font-weight: 800;
       }
 
       p {
         font-size: 2rem;
+        font-weight: 300;
       }
 
       button {
@@ -124,7 +125,8 @@ const MainContainer = styled.div`
       justify-content: center;
       align-items: center;
       text-align: center;
-      font-weight: 600;
+      font-weight: 800;
+      flex: 1;
 
       .text-wrapper {
         padding: 0;
@@ -142,6 +144,7 @@ const MainContainer = styled.div`
       justify-content: space-between;
       width: 100%;
       height: 100%;
+      flex: 1;
 
       .shoe-img-wrapper {
         height: 100%;

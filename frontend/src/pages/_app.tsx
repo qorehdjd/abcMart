@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app';
 import { createGlobalStyle } from 'styled-components';
 import store from '../../store/index';
 import { Provider } from 'react-redux';
+import Head from 'next/head'; // Head 컴포넌트 추가
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -9,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     margin: 0;
+    font-family: 'Pretendard', sans-serif;
   }
   ul {
     list-style: none;
@@ -26,6 +28,12 @@ const GlobalStyle = createGlobalStyle`
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
+      <Head>
+        <link
+          rel='stylesheet'
+          href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css'
+        />
+      </Head>
       <Provider store={store}>
         <GlobalStyle />
         <Component {...pageProps} />

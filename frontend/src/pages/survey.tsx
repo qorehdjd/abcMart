@@ -41,19 +41,11 @@ const SurveyContainer = styled.div`
     .survey-image {
       display: flex;
       justify-content: center;
-      img {
-        width: 109px;
-        height: 121px;
-      }
     }
 
     .logo {
       display: flex;
       justify-content: center;
-      img {
-        width: 380px;
-        height: 50px;
-      }
     }
 
     .nickname-input {
@@ -116,6 +108,19 @@ const SurveyContainer = styled.div`
       }
     }
   }
+  @media screen and (max-width: 650px) {
+    .survey-wrapper {
+      padding: 20px;
+      .survey-image {
+        img {
+          width: 90%;
+        }
+      }
+      .logo {
+        width: 80%;
+      }
+    }
+  }
 `;
 
 const Survey = () => {
@@ -163,11 +168,11 @@ const Survey = () => {
       <SurveyContainer>
         <div className='survey-wrapper'>
           <div className='survey-image'>
-            <Image src='/imgs/survey.png' width={109} height={121} alt='Survey Image' />
+            <Image src='/imgs/survey.svg' width={109} height={121} alt='Survey Image' />
           </div>
           <div className='logo'>
             <Link href='/'>
-              <Image src='/imgs/abc-walk101Logo.png' width={380} height={50} alt='ABC Walk101 Logo' />
+              <Image src='/imgs/logo.svg' width={426} height={56} layout='responsive' alt='ABC Walk101 Logo' />
             </Link>
           </div>
           <div className='title'>

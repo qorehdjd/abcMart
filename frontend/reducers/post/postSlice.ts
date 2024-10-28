@@ -13,7 +13,7 @@ export const analysis = createAsyncThunk<ImagePair[], AnalysisPayload, { rejectV
   'post/analysis',
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8000/user/analyze', payload.formData, {
+      const response = await axios.post('http://172.30.1.27:9900/user/analyze', payload.formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { login, clearError } from '../../reducers/user/userSlice';
@@ -31,21 +31,23 @@ const fadeUp = keyframes`
 `;
 
 const LoginContainer = styled.div`
-  display: flex;
-  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
   .login-walk-img-section {
-    background-color: #e6f2ff;
-    flex: 1;
+    display: flex;
+    justify-content: center;
     padding: 30px;
+    background-color: #e6f2ff;
     .login-walk-img-wrapper {
-      height: 100%;
+      width: 100%; /* 래퍼의 너비를 100%로 설정하여 반응형 적용 */
+      max-width: 500px; /* 최대 너비를 설정하여 너무 커지지 않도록 제한 */
+      height: auto; /* 높이를 자동으로 조정 */
       display: flex;
       justify-content: center;
       align-items: center;
       img {
         position: relative !important;
-        width: 493px !important;
-        height: 435px !important;
         animation: ${runAnimation} 1s infinite alternate ease-in-out, ${fadeUp} 1s ease-out;
       }
     }
@@ -122,6 +124,7 @@ const LoginContainer = styled.div`
           input {
             position: relative;
             top: 1px;
+            margin-right: 0.5rem;
           }
         }
         .error-message {
@@ -184,15 +187,13 @@ const LoginContainer = styled.div`
   }
 
   @media screen and (max-width: 1200px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
     .login-walk-img-section {
       display: flex;
       justify-content: center;
       .login-walk-img-wrapper {
-        width: 80%;
-        img {
-          position: relative !important;
-        }
+        width: 50%;
       }
     }
     .login-section {
@@ -227,10 +228,7 @@ const LoginContainer = styled.div`
   @media screen and (max-width: 600px) {
     .login-walk-img-section {
       .login-walk-img-wrapper {
-        img {
-          width: 80% !important;
-          height: fit-content !important;
-        }
+        width: 70%;
       }
     }
     .login-section {
@@ -241,7 +239,7 @@ const LoginContainer = styled.div`
         min-width: auto;
         margin: 3rem 0;
         .title {
-          font-size: 1.6rem;
+          font-size: 1.8rem;
         }
         .abc-walk101-logo-wrapper {
           width: 100%;
@@ -253,6 +251,25 @@ const LoginContainer = styled.div`
           img {
             width: 70% !important;
             height: fit-content !important;
+          }
+        }
+        form {
+          .persist-login-wrapper {
+            font-size: 1.8rem;
+            margin-top: 1.4rem;
+            input {
+              position: relative;
+              top: 1px;
+              margin-right: 0.8rem;
+            }
+          }
+        }
+        .find-wrap {
+          margin-top: 1.4rem;
+          .find-text {
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
           }
         }
       }
@@ -277,8 +294,9 @@ const Login: React.FC = () => {
   const { logInLoading, logInDone, logInError } = useAppSelector((state) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const didMount = useRef<boolean>(false);
 
-  //임시
+  // 임시;
   // const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
   //   router.push('/survey');
@@ -293,10 +311,14 @@ const Login: React.FC = () => {
   );
 
   useEffect(() => {
-    if (logInDone === true) {
-      router.push('/survey');
+    if (didMount.current) {
+      if (logInDone === true) {
+        router.push('/survey');
+      }
+      router.push('survey');
+    } else {
+      didMount.current = true;
     }
-    router.push('survey');
   }, [logInDone, router]);
 
   // 페이지가 마운트될 때 에러 상태 초기화
@@ -310,14 +332,20 @@ const Login: React.FC = () => {
       <LoginContainer>
         <div className='login-walk-img-section'>
           <div className='login-walk-img-wrapper'>
-            <Image src='/imgs/loginWalkImg.png' fill alt='loginWalkImg' />
+            <Image
+              src='/imgs/running-img.svg'
+              alt='loginWalkImg'
+              layout='responsive' // 반응형 레이아웃 설정
+              width={493} // 기본 이미지 너비 설정
+              height={435} // 기본 이미지 높이 설정
+            />
           </div>
         </div>
         <div className='login-section'>
           <div className='login-wrapper'>
             <div className='abc-walk101-logo-wrapper'>
               <Link href='/'>
-                <Image src='/imgs/abc-walk101Logo.png' width={426} height={56} alt='abc-walk101Logo' />
+                <Image src='/imgs/logo.svg' width={426} height={56} layout='responsive' alt='abc-walk101Logo' />
               </Link>
             </div>
             <div className='title'>

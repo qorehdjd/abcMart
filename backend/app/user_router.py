@@ -208,7 +208,7 @@ def filter_images_by_content_type(images: List[UploadFile]) -> List[tuple]:
     return indexed_images
 
 # 이미지 분석 처리
-@router.post("/analyze/")
+@router.post("/analyze")
 async def analyze(request: Request,  images: List[UploadFile] = File(...)):
     
     filtered_images = filter_images_by_content_type(images)

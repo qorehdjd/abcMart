@@ -1,5 +1,5 @@
 export interface PostState {
-  posts: ImagePair[];
+  posts: any;
   analysisLoading: Boolean; // 분석 시도중
   analysisDone: Boolean;
   analysisError: null | string;
