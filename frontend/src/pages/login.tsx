@@ -297,29 +297,29 @@ const Login: React.FC = () => {
   const didMount = useRef<boolean>(false);
 
   // 임시;
-  // const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   router.push('/survey');
-  // }, []);
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push('/survey');
+  }, []);
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      dispatch(login({ userId: username, password }));
-    },
-    [dispatch, username, password],
-  );
+  // const handleSubmit = useCallback(
+  //   (e: React.FormEvent<HTMLFormElement>) => {
+  //     e.preventDefault();
+  //     dispatch(login({ userId: username, password }));
+  //   },
+  //   [dispatch, username, password],
+  // );
 
-  useEffect(() => {
-    if (didMount.current) {
-      if (logInDone === true) {
-        router.push('/survey');
-      }
-      router.push('survey');
-    } else {
-      didMount.current = true;
-    }
-  }, [logInDone, router]);
+  // useEffect(() => {
+  //   if (didMount.current) {
+  //     if (logInDone === true) {
+  //       router.push('/survey');
+  //     }
+  //     router.push('survey');
+  //   } else {
+  //     didMount.current = true;
+  //   }
+  // }, [logInDone, router]);
 
   // 페이지가 마운트될 때 에러 상태 초기화
   useEffect(() => {
