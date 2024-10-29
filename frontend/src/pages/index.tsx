@@ -51,17 +51,17 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const MainContainer = styled.div`
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 
   .text-section {
-    height: 50%;
     background-color: #fafafa;
     opacity: 0;
     transform: translateY(20px);
     animation: ${fadeUp} 1s forwards 0.5s;
     z-index: 200;
+    flex: 1;
     .text-wrapper {
       padding-left: 28rem;
       padding-top: 9rem;
@@ -93,10 +93,10 @@ const MainContainer = styled.div`
   }
 
   .shoe-img-section {
-    height: 50%;
     background-color: #e6f2ff;
     display: flex;
     justify-content: end;
+    flex: 1;
 
     .shoe-img-wrapper {
       position: relative;
