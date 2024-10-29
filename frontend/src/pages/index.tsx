@@ -7,7 +7,7 @@ import styled, { createGlobalStyle, keyframes } from 'styled-components';
 const fadeUp = keyframes`
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -20,7 +20,7 @@ const moveUpAndDown = keyframes`
     transform: translateY(0);
   }
   50% {
-    transform: translateY(50px);
+    transform: translateY(20px);
   }
 `;
 
@@ -176,7 +176,7 @@ const MainContainer = styled.div`
           cursor: pointer;
           position: relative;
           font-weight: 600;
-          margin-top: 12rem;
+          margin-top: 5.5rem;
           z-index: 10;
           animation: none; /* 버튼 애니메이션 제거 */
         }
