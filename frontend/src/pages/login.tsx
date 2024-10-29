@@ -188,7 +188,7 @@ const LoginContainer = styled.div`
 
   @media screen and (max-width: 1200px) {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 1.5fr;
     .login-walk-img-section {
       display: flex;
       justify-content: center;
@@ -240,6 +240,7 @@ const LoginContainer = styled.div`
         margin: 3rem 0;
         .title {
           font-size: 1.8rem;
+          text-align: center;
         }
         .abc-walk101-logo-wrapper {
           width: 100%;
