@@ -277,24 +277,24 @@ const Login: React.FC = () => {
   //   };
   // }, [router]);
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'kakao') => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: 'http://localhost:3000/survey', // 리다이렉션 URL 설정
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-      if (error) throw error;
-      console.log('Redirecting...');
-    } catch (err) {
-      console.error('Social Login Error:', err);
-    }
-  };
+  // const handleSocialLogin = async (provider: 'google' | 'apple' | 'kakao') => {
+  //   try {
+  //     const { data, error } = await supabase.auth.signInWithOAuth({
+  //       provider,
+  //       options: {
+  //         redirectTo: 'http://localhost:3000/survey', // 리다이렉션 URL 설정
+  //         queryParams: {
+  //           access_type: 'offline',
+  //           prompt: 'consent',
+  //         },
+  //       },
+  //     });
+  //     if (error) throw error;
+  //     console.log('Redirecting...');
+  //   } catch (err) {
+  //     console.error('Social Login Error:', err);
+  //   }
+  // };
 
   const onClick = useCallback(() => {
     router.push('survey');
