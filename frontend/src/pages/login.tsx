@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Image from 'next/image';
 import Link from 'next/link';
-import supabase from '../utils/supabaseClient'; // Supabase 클라이언트 초기화 파일을 만드세요.
+// import supabase from '../utils/supabaseClient'; // Supabase 클라이언트 초기화 파일을 만드세요.
 
 const GlobalStyle = createGlobalStyle`
   @media screen and (max-width: 700px) {
@@ -300,15 +300,15 @@ const Login: React.FC = () => {
     router.push('survey');
   }, []);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        router.push('/dashboard'); // 로그인 성공 시 리다이렉트 경로
-      }
-    };
-    checkUser();
-  }, [router]);
+  // useEffect(() => {
+  //   const checkUser = async () => {
+  //     const { data } = await supabase.auth.getUser();
+  //     if (data?.user) {
+  //       router.push('/dashboard'); // 로그인 성공 시 리다이렉트 경로
+  //     }
+  //   };
+  //   checkUser();
+  // }, [router]);
 
   return (
     <>
