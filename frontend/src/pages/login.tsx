@@ -334,11 +334,11 @@ const Login: React.FC = () => {
                 <Image src='/svg/google.svg' alt='Google Logo' width={20} height={20} />
                 Google로 로그인
               </button>
-              <button className='kakao' onClick={() => handleSocialLogin('kakao')}>
+              <button className='kakao' onClick={() => onClick()}>
                 <Image src='/svg/kakao.svg' alt='Kakao Logo' width={20} height={20} />
                 Kakao로 로그인
               </button>
-              <button className='apple' onClick={() => handleSocialLogin('apple')}>
+              <button className='apple' onClick={() => onClick()}>
                 <Image src='/svg/apple.svg' alt='Apple Logo' width={20} height={20} />
                 Apple로 로그인
               </button>
