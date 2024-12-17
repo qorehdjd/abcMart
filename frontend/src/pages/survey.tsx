@@ -149,7 +149,7 @@ const Survey = () => {
       //   nickname,
       //   selectedItems,
       // });
-      router.push('/picture');
+      router.push('/guideline');
     } catch (error) {
       console.error('Error sending survey data', error);
     }

@@ -1,16 +1,36 @@
+from asyncio import Queue
+from contextlib import asynccontextmanager
 from datetime import datetime
+from functools import wraps
+import os
+import sqlite3
+import aiosqlite
 from fastapi import HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.future import select
-from app.user_schema import UserCreate, LoginBase, idFindForm_email, idFindform_sms, pwFindForm_email, pwFindForm_sms, updatePw, gptBase, UserIdForm, resultBase
+from app.user_schema import Nickname, UserCreate, LoginBase, idFindForm_email, idFindform_sms, pwFindForm_email, pwFindForm_sms, updatePw, gptBase, UserIdForm, resultBase
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.user_models import User
+from app.user_models import User, AnalysisResult, NicknameBase
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from async_lru import alru_cache
-import aiosqlite
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class DBPool:
+    def __init__(self, max_connections=10):
+        self.pool = Queue(maxsize=max_connections)
+
+        async def get_connection(self):
+            if self.pool.empty():
+                return await aiosqlite.connect('data.db')
+            return await self.pool.get()
+
+        async def release_connection(self, conn):
+            await self.pool.put(conn)
+
+db_pool = DBPool()
+    
 
 class UserService:
     # 이메일 중복 확인
@@ -43,6 +63,73 @@ class UserService:
             result = await db.execute(select(User).filter(User.userId == login_base.userId))
             return result.scalars().first()
         
+    
+    
+    # 닉네임 설정
+    @classmethod
+    async def set_nickname(cls, body: Nickname):
+        async with aiosqlite.connect('data.db') as db:
+            try:
+                await db.execute('''
+                    INSERT INTO nickname (nickname, created_at)
+                    VALUES (?, ?)
+                ''', (body.nickname, datetime.now().isoformat()))
+                
+                await db.commit()
+                return {"message": "닉네임이 성공적으로 설정되었습니다."}
+            except sqlite3.Error as e:
+                await db.rollback()
+                return {"error": f"닉네임 설정 중 오류 발생: {str(e)}"}
+    
+    
+    @classmethod
+    async def setup_database(cls):
+        async with aiosqlite.connect('data.db') as db:
+            await db.execute('PRAGMA journal_mode = WAL;')
+            await db.execute('''CREATE TABLE IF NOT EXISTS nickname (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nickname TEXT NOT NULL
+            );''')
+            await db.execute('CREATE INDEX IF NOT EXISTS idx_nickname ON nickname(nickname);')
+            await db.commit()
+
+    @classmethod
+    @alru_cache(maxsize=200000)
+    async def get_nickname(cls, nickname :str):
+        async with aiosqlite.connect('data.db') as db:
+            await db.execute('PRAGMA journal_mode = WAL;')
+            try:
+                async with db.execute('SELECT nickname FROM nickname WHERE nickname = ?', (nickname,)) as cursor:
+                    result = await cursor.fetchone()
+                    return result[0] if result else None
+            except sqlite3.Error as e:
+                print(f"데이터베이스 쿼리 중 오류 발생: {e}")
+                return None
+
+    @classmethod
+    def clear_cache(cls):
+        cls.get_nickname.cache_clear()
+    
+    @classmethod
+    async def warm_up_cache(cls):
+        common_ids = range(1, 1001)  # 예: 자주 사용되는 ID 1-1000
+        await cls.get_nicknames_batch(common_ids)
+    
+    # 닉네임 my조회
+    @classmethod
+    @alru_cache(maxsize=20000)
+    async def get_nickname_my(cls, nickname_id: int, db: AsyncSession):
+        async with db.begin():
+            try:
+                result = await db.execute(select(NicknameBase).filter(NicknameBase.id == nickname_id))
+                nickname = result.scalars().first()
+                if nickname is None:
+                    print(f"ID {nickname_id}에 해당하는 닉네임을 찾을 수 없습니다.")
+                return nickname
+            except Exception as e:
+                print(f"닉네임 조회 중 오류 발생: {e}")
+                return None
+
 
     # 아이디 찾기
     @classmethod
@@ -124,48 +211,38 @@ class UserService:
     
     # 이미지 분석 결과
     @classmethod
-    async def save_analysis_result(cls, save_result: resultBase, db: AsyncSession):
-        db_result = resultBase(
-            userId=user_create.userId,
-            email=user_create.email, 
-            hashed_pw=pwd_context.hash(user_create.password1),
-            phone=user_create.phone,
-            username=user_create.username,
+    async def save_analysis_result(cls,  username: str, userResult: dict, db: AsyncSession):
+        db_result = AnalysisResult(
+            username=username,
+            LtSupe = userResult.LtSupe,
+            RtSupe = userResult.RtSupe,
+            LtSupeInUrl = userResult.LtSupeInUrl,
+            LtSupeOutUrl = userResult.LtSupeOutUrl,
+            RtSupeInUrl = userResult.RtSupeInUrl,
+            RtsupeOutUrl = userResult.RtsupeOutUrl,
+            LtMedi = userResult.LtMedi,
+            RtMedi = userResult.RtMedi,
+            LtMediInUrl= userResult.LtMediInUrl,
+            LtMediOutUrl= userResult.LtMediOutUrl,
+            RtMediInUrl = userResult.RtMediInUrl,
+            RtMediOutUrl = userResult.RtMediOutUrl,
+            LtAnkl = userResult.LtAnkl,
+            RtAnkl = userResult.RtAnkl,
+            LtAnklInUrl = userResult.LtAnklInUrl,
+            LtAnklOutUrl = userResult.LtAnklOutUrl,
+            RtAnklInUrl = userResult.RtAnklInUrl,
+            RtAnklOutUrl = userResult.RtAnklOutUrl,
+            Bla = userResult.Bla,
+            blaInUrl = userResult.blaInUrl,
+            blaOutUrl = userResult.blaOutUrl,
             created_at=datetime.now()
         )
-        db.add(db_user)
+        db.add(db_result)
         await db.commit()
-        await db.refresh(db_user)        
-        return db_user 
+        await db.refresh(db_result)        
+        return db_result 
     
     
-    @classmethod
-    async def setup_database(cls):
-        async with aiosqlite.connect('data.db') as db:
-            await db.execute('PRAGMA journal_mode = WAL;')
-            await db.execute('''CREATE TABLE IF NOT EXISTS nickname (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nickname TEXT NOT NULL
-            );''')
-            await db.execute('CREATE INDEX IF NOT EXISTS idx_nickname ON nickname(nickname);')
-            await db.commit()
-
-    @classmethod
-    @alru_cache(maxsize=200000)
-    async def get_nickname(cls, nickname_id: int):
-        async with aiosqlite.connect('data.db') as db:
-            await db.execute('PRAGMA journal_mode = WAL;')
-            try:
-                async with db.execute('SELECT nickname FROM nickname WHERE id = ?', (nickname_id,)) as cursor:
-                    result = await cursor.fetchone()
-                    return result[0] if result else None
-            except sqlite3.Error as e:
-                print(f"데이터베이스 쿼리 중 오류 발생: {e}")
-                return None
-
-    @classmethod
-    def clear_cache(cls):
-        cls.get_nickname.cache_clear()
     # gpt 분석 (데이터베이스 저장 여부 확인, 데이터베이스 모델 필요)
     # @classmethod
     # async def gpt_result(cls, userId: str, gpt_result: gptBase, db:AsyncSession):

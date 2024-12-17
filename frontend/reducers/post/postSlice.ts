@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AnalysisPayload, ImagePair, PostState } from './postTypes';
+import { AnalysisPayload, AnalysisResult, PostState } from './postTypes';
 import axios from 'axios';
 
 const initialState: PostState = {
@@ -9,16 +9,16 @@ const initialState: PostState = {
   analysisError: null,
 };
 
-export const analysis = createAsyncThunk<ImagePair[], AnalysisPayload, { rejectValue: string }>(
+export const analysis = createAsyncThunk<AnalysisResult, AnalysisPayload, { rejectValue: string }>(
   'post/analysis',
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://172.30.1.27:9900/user/analyze', payload.formData, {
+      const response = await axios.post('http://localhost:8000/analyze', payload.formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      return response.data as ImagePair[];
+      return response.data as AnalysisResult;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data.message);
@@ -39,7 +39,7 @@ const postSlice = createSlice({
         state.analysisDone = false;
         state.analysisError = null;
       })
-      .addCase(analysis.fulfilled, (state, action: PayloadAction<ImagePair[]>) => {
+      .addCase(analysis.fulfilled, (state, action: PayloadAction<AnalysisResult>) => {
         state.analysisLoading = false;
         state.analysisDone = true;
         state.posts = action.payload;

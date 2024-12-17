@@ -16,6 +16,14 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+// 로컬 파일 경로를 HTTP URL로 변환하는 함수
+const convertToBackendPath = (filePath: any) => {
+  // const basePath = 'http://172.30.1.27:9900/images'; // 서버의 StaticFiles에서 마운트된 URL 경로
+  const basePath = 'http://localhost:8000/images'; // 서버의 StaticFiles에서 마운트된 URL 경로
+  const relativePath = filePath.replace('C:/Users/MYCOM/Desktop/abcMart/backend/FootABC/images', '');
+  return `${basePath}${relativePath.replace(/\\/g, '/')}`;
+};
+
 const expand = keyframes`
   from {
     max-height: 0;
@@ -61,10 +69,8 @@ const ResultLayout = styled.div`
 
     .logo {
       img {
+        /* width: 40% !important; */
         width: 70% !important;
-      }
-
-      @media screen and (max-width: 450px) {
       }
     }
 
@@ -148,17 +154,6 @@ const ResultLayout = styled.div`
     .result_section {
       width: 90%;
     }
-
-    .copyright {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-
-      img {
-        width: 55%;
-        height: fit-content !important;
-      }
-    }
   }
 
   .chatgpt_button {
@@ -204,17 +199,16 @@ const Result = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false); // 로딩 상태 관리 추가
+  // const [isLoaded, setIsLoaded] = useState(false); // 로딩 상태 관리 추가
   const data = useAppSelector((state) => state.post.posts);
   const router = useRouter();
   console.log('data', data);
 
-  useEffect(() => {
-    if (data && data.in && data.out) {
-      // 데이터가 제대로 로드되었는지 확인 후 로딩 완료로 설정
-      setIsLoaded(true);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data && data.angles && data.input && data.output) {
+  //     setIsLoaded(true); // 데이터 로드 완료 시
+  //   }
+  // }, [data]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -240,48 +234,258 @@ const Result = () => {
 
   const sections = [
     {
-      title: '왼쪽 발 내측',
+      title: '오른쪽 발 내측',
       content: (
-        <div className='imgs_wrapper'>
-          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner.jpg')}>
-            <Image
-              src={'/imgs/result/inner/inner.jpg'}
-              layout='responsive'
-              alt='inner_foot_img1'
-              priority
-              width={400}
-              height={300}
-            />
-          </div>
-          <div className='img_wrapper' onClick={() => openModal('/imgs/result/inner/inner_result.jpg')}>
-            <Image
-              src={'/imgs/result/inner/inner_result.jpg'}
-              layout='responsive'
-              alt='inner_foot_img2'
-              priority
-              width={400}
-              height={300}
-            />
+        <div>
+          {/* {data.input?.RtMedi && data.output?.RtMedi ? (
+            <div>
+              <div className='imgs_wrapper'>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.input.RtMedi))}>
+                  <Image
+                    src={convertToBackendPath(data.input.RtMedi)}
+                    layout='responsive'
+                    alt='left_inner_foot_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.output.RtMedi))}>
+                  <Image
+                    src={convertToBackendPath(data.output.RtMedi)}
+                    layout='responsive'
+                    alt='left_inner_foot_result_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+              </div>
+              <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+                RtMedi Angle between 1DPI-MMT and AI-1MTB:
+                <span style={{ color: 'red', marginLeft: '0.5rem' }}>
+                  {data.angles['RtMedi Angle between 1DPI-MMT and AI-1MTB'] || 'N/A'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <EmptyContainer>
+              <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
+            </EmptyContainer>
+          )} */}
+          <div>
+            <div className='imgs_wrapper'>
+              <div className='img_wrapper' onClick={() => openModal('flipped_image.jpg')}>
+                <Image
+                  src='flipped_image.jpg'
+                  layout='responsive'
+                  alt='left_inner_foot_img'
+                  priority
+                  width={400}
+                  height={300}
+                  unoptimized
+                />
+              </div>
+              <div className='img_wrapper' onClick={() => openModal('flipped_image_result.jpg')}>
+                <Image
+                  src='flipped_image_result.jpg'
+                  layout='responsive'
+                  alt='left_inner_foot_result_img'
+                  priority
+                  width={400}
+                  height={300}
+                  unoptimized
+                />
+              </div>
+            </div>
+            <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+              RtMedi Angle between 1DPI-MMT and AI-1MTB:
+              <span style={{ color: 'red', marginLeft: '0.5rem' }}>66.44</span>
+            </div>
           </div>
         </div>
       ),
     },
-    { title: '오른쪽 발 내측', content: '' },
-    { title: '왼쪽 발 뒤', content: '' },
-    { title: '오른쪽 발 뒤', content: '' },
-    { title: '왼쪽 발 위', content: '' },
+    {
+      title: '왼쪽 발 내측',
+      content: (
+        <div>
+          {data.input?.LtMedi && data.output?.LtMedi ? (
+            <div>
+              <div className='imgs_wrapper'>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.input.LtMedi))}>
+                  <Image
+                    src={convertToBackendPath(data.input.LtMedi)}
+                    layout='responsive'
+                    alt='right_inner_foot_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.output.LtMedi))}>
+                  <Image
+                    src={convertToBackendPath(data.output.LtMedi)}
+                    layout='responsive'
+                    alt='right_inner_foot_result_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+              </div>
+              <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+                LtMedi Angle between 1DPI-MMT and AI-1MTB:
+                <span style={{ color: 'red', marginLeft: '0.5rem' }}>
+                  {data.angles['LtMedi Angle between 1DPI-MMT and AI-1MTB'] || 'N/A'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <EmptyContainer>
+              <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
+            </EmptyContainer>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: '오른쪽 발 뒤',
+      content: (
+        <div>
+          {/* {data.input?.RtAnkl && data.output?.RtAnkl ? (
+            <div>
+              <div className='imgs_wrapper'>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.input.RtAnkl))}>
+                  <Image
+                    src={convertToBackendPath(data.input.RtAnkl)}
+                    layout='responsive'
+                    alt='right_inner_foot_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.output.RtAnkl))}>
+                  <Image
+                    src={convertToBackendPath(data.output.RtAnkl)}
+                    layout='responsive'
+                    alt='right_inner_foot_result_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+              </div>
+              <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+                RtAnkl Angle between CLC-AMC-AIP:
+                <span style={{ color: 'red', marginLeft: '0.5rem' }}>
+                  {data.angles['RtAnkl Angle between CLC-AMC-AIP'] || 'N/A'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <EmptyContainer>
+              <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
+            </EmptyContainer>
+          )} */}
+          <div>
+            <div className='imgs_wrapper'>
+              <div className='img_wrapper' onClick={() => openModal('backLeg.jpg')}>
+                <Image
+                  src='backLeg.jpg'
+                  layout='responsive'
+                  alt='right_inner_foot_img'
+                  priority
+                  width={400}
+                  height={300}
+                  unoptimized
+                />
+              </div>
+              <div className='img_wrapper' onClick={() => openModal('backLeg_result.jpg')}>
+                <Image
+                  src='backLeg_result.jpg'
+                  layout='responsive'
+                  alt='right_inner_foot_result_img'
+                  priority
+                  width={400}
+                  height={300}
+                  unoptimized
+                />
+              </div>
+            </div>
+            <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+              RtAnkl Angle between CLC-AMC-AIP:
+              <span style={{ color: 'red', marginLeft: '0.5rem' }}>0.51</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '왼쪽 발 뒤',
+      content: (
+        <div>
+          {data.input?.LtAnkl && data.output?.LtAnkl ? (
+            <div>
+              <div className='imgs_wrapper'>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.input.LtAnkl))}>
+                  <Image
+                    src={convertToBackendPath(data.input.LtAnkl)}
+                    layout='responsive'
+                    alt='right_inner_foot_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+                <div className='img_wrapper' onClick={() => openModal(convertToBackendPath(data.output.LtAnkl))}>
+                  <Image
+                    src={convertToBackendPath(data.output.LtAnkl)}
+                    layout='responsive'
+                    alt='right_inner_foot_result_img'
+                    priority
+                    width={400}
+                    height={300}
+                    unoptimized
+                  />
+                </div>
+              </div>
+              <div className='angle_info' style={{ textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>
+                LtAnkl Angle between CLC-AMC-AIP:
+                <span style={{ color: 'red', marginLeft: '0.5rem' }}>
+                  {data.angles['LtAnkl Angle between CLC-AMC-AIP'] || 'N/A'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <EmptyContainer>
+              <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
+            </EmptyContainer>
+          )}
+        </div>
+      ),
+    },
     { title: '오른쪽 발 위', content: '' },
+    { title: '왼쪽 발 위', content: '' },
     { title: '양발 정면', content: '' },
   ];
 
   // if (!isLoaded) {
-  //   // 준비 완료 전에는 로딩 애니메이션 표시
-  //   return null;
+  //   return null; // 로딩 완료 전에는 아무것도 표시하지 않음
   // }
 
   return (
     <>
       <GlobalStyle />
+      {/* <ResultLayout isLoaded={isLoaded}> */}
       <ResultLayout>
         <div className='result_section'>
           <div className='logo'>
@@ -292,6 +496,7 @@ const Result = () => {
                 width={426}
                 height={56}
                 alt='abc-walk101Logo'
+                unoptimized
               />
             </Link>
           </div>
@@ -305,9 +510,7 @@ const Result = () => {
                 </div>
                 <div className={`accordion-body ${activeIndex === index ? 'active' : ''}`}>
                   <div className='result_wrapper'>
-                    {section.content ? (
-                      section.content
-                    ) : (
+                    {section.content || (
                       <EmptyContainer>
                         <Lottie animationData={emptyBoxAnimation} style={{ width: 200, height: 200 }} />
                       </EmptyContainer>
@@ -348,6 +551,7 @@ const Result = () => {
                 width={800}
                 height={600}
                 alt='Selected Image'
+                unoptimized
               />
             )}
           </ModalImage>

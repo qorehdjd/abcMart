@@ -1,16 +1,16 @@
+import asyncio
 from io import BytesIO
 import os
 import random
 import shutil
 import subprocess
+import time
 import boto3
 from typing import Annotated, List, Optional
 import cv2
-from fastapi import APIRouter, HTTPException, Depends, Request, Response, BackgroundTasks, File, UploadFile, Response
+from fastapi import APIRouter, HTTPException, Depends, Request, Response, BackgroundTasks, File, UploadFile, Response, logger
 from datetime import timedelta, datetime
 
-
-from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +21,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from app.s3 import s3Upload
 
 from app.user_database import get_db
-from app.user_schema import UserCreate, LoginBase, Token, idFindForm_email, idFindform_sms, pwFindForm_email, pwFindForm_sms, Verificationemail, Verificationsms, updatePw, gptBase
+from app.user_schema import Nickname, UserCreate, LoginBase, Token, idFindForm_email, idFindform_sms, pwFindForm_email, pwFindForm_sms, Verificationemail, Verificationsms, updatePw, resultBase, gptBase
 from app.user_crud import UserService, pwd_context
 from auth.email import send_email, verify_code
 from auth.sms import send_verification, check_verification
@@ -29,12 +29,14 @@ from app.ai.gpt import post_gpt, create_prompt
 # from analysis_inference_n1 import predict_and_save
 
 
-# router = APIRouter()
 router = APIRouter(
     prefix='/user',
     tags=['user']
 )
 
+
+
+# 메모리 저장
 memory_store = []
 
 # 회원가입
@@ -65,7 +67,6 @@ async def login(userLogin: LoginBase, db: AsyncSession = Depends(get_db)):
         "exp": datetime.now() + timedelta(minutes=int(Config.JWT_ACCESS_TOKEN_EXPIRES))
     }
     access_token = jwt.encode(data, Config.JWT_SECRET_KEY, Config.ALGORITHM)
-    print(access_token)
     
     # 쿠키에 토큰 설정
     response = JSONResponse(content={
@@ -76,26 +77,53 @@ async def login(userLogin: LoginBase, db: AsyncSession = Depends(get_db)):
         key="access_token", 
         value=access_token, 
         httponly=True, 
-        samesite="lax"
+        # secure=True, 
+        samesite="none"
     )
 
     return response
 
+
+# 닉네임 설정
+@router.post("/nickname/create")
+async def set_nickname(body: Nickname):
+    await UserService.set_nickname(body)
+    return {"msg": "닉네임이 설정되었습니다."}
+
 # 닉네임 조회
-@router.get("/nickname/{nickname_id}", response_model=dict, 
+@router.get("/nickname/{nickname}", response_model=dict, 
         responses={
             404: {"description": "닉네임을 찾을 수 없음"},
             500: {"description": "서버 오류"}
         })
-async def get_nickname(nickname_id: int):
+async def get_nickname(nickname: str):
     try:
-        nickname = await UserService.get_nickname(nickname_id)
+        nickname = await UserService.get_nickname(nickname)
         if nickname:
             return {"nickname": nickname}
         else:
-            raise HTTPException(status_code=404, detail=f"ID {nickname_id}에 해당하는 닉네임을 찾을 수 없습니다.")
+            raise HTTPException(status_code=404, detail=f"ID {nickname}에 해당하는 닉네임을 찾을 수 없습니다.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"서버 오류: {str(e)}")
+
+@router.post("/clear-cache")
+async def clear_nickname_cache():
+    try:
+        UserService.clear_cache()
+        return {"message": "닉네임 캐시가 성공적으로 초기화되었습니다."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"캐시 초기화 중 오류 발생: {str(e)}")
+
+
+@router.get("/nicknamemy")
+async def get_nickname_my(nickname_id: int, db: AsyncSession = Depends(get_db)):
+    nickname = await UserService.get_nickname_my(nickname_id, db)
+    if nickname:
+        return {"nickname": nickname}
+    else:
+        raise HTTPException(status_code=404, detail=f"ID {nickname_id}에 해당하는 닉네임을 찾을 수 없습니다.")
+
+
 
 # 로그아웃
 @router.get("/logout")
@@ -113,6 +141,7 @@ async def findIdSms(body: idFindform_sms, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="일치하는 계정 정보가 존재하지 않습니다.")
     send_verification(body.phone)
     return {"msg": f"{body.phone}로 본인인증 코드가 전송되었습니다."}
+
 
 # sms 비번 찾기(변경)
 @router.post("/findPw_phone")
@@ -197,109 +226,3 @@ async def reset_password(body: pwFindForm_sms, newPw: updatePw, db: AsyncSession
     await UserService.updatePw_sms(body, newPw, db)
     return {"msg": "비밀번호가 성공적으로 변경되었습니다."}
 
-
-def filter_images_by_content_type(images: List[UploadFile]) -> List[tuple]:
-    indexed_images = [
-        (index, image)
-        for index, image in enumerate(images)
-        if image.content_type != 'application/x-empty'
-    ]
-    
-    return indexed_images
-
-# 이미지 분석 처리
-@router.post("/analyze")
-async def analyze(request: Request,  images: List[UploadFile] = File(...)):
-    
-    filtered_images = filter_images_by_content_type(images)
-    print(filtered_images)
-
-    current_date = datetime.now().strftime("%Y%m%d%H%M%S")
-    input_dir = 'C:/Users/MYCOM/Desktop/abcMart/backend/images/input'
-    os.makedirs(input_dir, exist_ok=True)
-    output_dir = 'C:/Users/MYCOM/Desktop/abcMart/backend/images/output'
-    os.makedirs(output_dir, exist_ok=True)
-    
-    if os.path.isdir(input_dir):
-        for filename in os.listdir(input_dir):
-            file_path = os.path.join(input_dir, filename)
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-                
-    if os.path.isdir(output_dir):
-        for filename in os.listdir(output_dir):
-            file_path = os.path.join(output_dir, filename)
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        
-    for _, image in filtered_images:  # file -> image로 변경
-        contents = await image.read()  # 이제 올바른 image 객체에 대해 read 호출
-        filename = f'{current_date}_{random.randrange(999)}.jpg'
-        file_path = os.path.join(input_dir, filename)
-        with open(file_path, "wb") as f:
-            f.write(contents)
- # 이미지 분석   
-    try:
-        images_to_analyze = [image for index, image in filtered_images if index in [0, 1]]
-        if images_to_analyze:
-            medi_predict(input_dir, output_dir)
-            uploaded_urls = await s3Upload(images_to_analyze, output_dir)  # images -> images_to_analyze로 변경
-            
-            analysis_result = {
-                'in': uploaded_urls[0],
-                'out': uploaded_urls[1]
-            }
-            memory_store.append(analysis_result)
-            
-            return JSONResponse(status_code=200, content=analysis_result)
-        else:
-            return JSONResponse(status_code=400, content={'error': 'No input files provided'})
-    
-    except Exception as e:
-        print(e)
-        return JSONResponse(status_code=500, content={'error': 'Image analysis failed'})
-# 결과 페이지
-@router.post("/result/")
-async def result(request: Request):
-    # 데이터베이스에서 결과 조회
-    # try:
-    #     result = await UserService.get_analysis_result(result_id, db)
-    #     if result:
-    #         return JSONResponse(status_code=200, content={
-    #             'result': result
-    #         })
-    #     else:
-    #         raise HTTPException(status_code=404, detail='Result not found')
-    
-    # except Exception as e:
-    #     print(e)
-    #     return JSONResponse(status_code=500, content={'error': 'Failed to retrieve result'})
-    
-    # 메모리에서 결과 조회    
-    if memory_store:
-        return JSONResponse(status_code=200, content={'results': memory_store})
-    else:
-        return JSONResponse(status_code=404, content={'error': 'No results found'})
-
-# gpt 분석
-@router.post("/gpt/", response_class=JSONResponse)
-async def create_gpt(request: Request, data: gptBase):
-    try:
-        # 요청 본문을 로깅하여 확인
-        request_body = await request.json()
-        print("요청 본문:", request_body)
-
-        content = create_prompt(data.content)
-        if content is None:
-            raise HTTPException(status_code=204, detail="Something went wrong")
-
-        response_data = {
-            "status": 200,
-            "content": content
-        }
-    except HTTPException as e:
-        response_data = {
-            "status": e.status_code,
-            "data": "다시 시도해주세요."
-        }
-    return JSONResponse(content=response_data)

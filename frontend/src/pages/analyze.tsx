@@ -520,6 +520,7 @@ const Analyze: React.FC = () => {
   const [previews, setPreviews] = useState<(string | null)[]>(Array(7).fill(null));
   const [files, setFiles] = useState<(File | null)[]>(Array(7).fill(null));
   const [modalImage, setModalImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -571,6 +572,7 @@ const Analyze: React.FC = () => {
       setPreviews(newPreviews);
       setFiles(newFiles);
     }
+    event.target.value = '';
   };
 
   const openModal = (imageSrc: string) => {
@@ -579,6 +581,13 @@ const Analyze: React.FC = () => {
 
   const closeModal = () => {
     setModalImage(null);
+  };
+
+  // 로컬 파일 경로를 HTTP URL로 변환하는 함수
+  const convertToBackendPath = (filePath: string): string => {
+    const basePath = 'http://localhost:8000/images';
+    const relativePath = filePath.replace('C:/Users/MYCOM/Desktop/abcMart/backend/FootABC/images', '');
+    return `${basePath}${relativePath.replace(/\\/g, '/')}`;
   };
 
   const handleAnalyzeClick = async () => {
@@ -598,36 +607,83 @@ const Analyze: React.FC = () => {
     });
     console.log('formData', formData);
     try {
-      console.log('files', files);
-      //백엔드로 요청 보내기 (예: POST 요청)
-      // const response = await axios.post('http://localhost:8000/user/analyze', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     //'Content-Type': 'application/json',
-      //   },
-      // });
-      // analysis Thunk 호출
+      setIsLoading(true);
       const resultAction = await dispatch(analysis({ formData }));
 
       if (analysis.fulfilled.match(resultAction)) {
-        console.log('response', resultAction.payload);
-        // 결과 페이지로 이동 (백엔드에서 받은 데이터를 결과 페이지로 전달 가능)
-        router.push('/result');
+        const analysisData = resultAction.payload;
+
+        // input과 output 모든 이미지 프리로드
+        const imagesToPreload: string[] = [
+          ...(Object.values(analysisData.input) as string[]),
+          ...(Object.values(analysisData.output) as string[]),
+        ];
+
+        const preloadPromises = imagesToPreload.map((imagePath) => {
+          return new Promise<void>((resolve) => {
+            const fullUrl = convertToBackendPath(imagePath); // 동일한 변환 함수 사용
+            const img = new Image();
+            img.src = fullUrl;
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+          });
+        });
+
+        await Promise.all(preloadPromises); // 모든 이미지가 로드될 때까지 대기
+        setIsLoading(false);
+        router.push('/result'); // 결과 페이지로 이동
       } else {
-        //alert('분석에 실패했습니다.');
         console.error('Error:', resultAction.payload);
-        // 에러 처리 (사용자에게 알림 등을 제공)
       }
-      router.push('/result');
-      // 결과 페이지로 이동 (백엔드에서 받은 데이터를 결과 페이지로 전달 가능)
     } catch (error) {
       console.error('Error uploading images:', error);
-      // 에러 처리 (사용자에게 알림 등을 제공)
+      alert('분석에 실패했습니다.');
+    }
+
+    // try {
+    //   console.log('files', files);
+    //   //백엔드로 요청 보내기 (예: POST 요청)
+    //   // const response = await axios.post('http://localhost:8000/user/analyze', formData, {
+    //   //   headers: {
+    //   //     'Content-Type': 'multipart/form-data',
+    //   //     //'Content-Type': 'application/json',
+    //   //   },
+    //   // });
+    //   // analysis Thunk 호출
+    //   const resultAction = await dispatch(analysis({ formData }));
+
+    //   if (analysis.fulfilled.match(resultAction)) {
+    //     console.log('response', resultAction.payload);
+    //     // 결과 페이지로 이동 (백엔드에서 받은 데이터를 결과 페이지로 전달 가능)
+    //     router.push('/result');
+    //   } else {
+    //     //alert('분석에 실패했습니다.');
+    //     console.error('Error:', resultAction.payload);
+    //     // 에러 처리 (사용자에게 알림 등을 제공)
+    //   }
+    //   router.push('/result');
+    //   // 결과 페이지로 이동 (백엔드에서 받은 데이터를 결과 페이지로 전달 가능)
+    // } catch (error) {
+    //   console.error('Error uploading images:', error);
+    //   // 에러 처리 (사용자에게 알림 등을 제공)
+    //   alert('분석에 실패했습니다.');
+    // }
+  };
+
+  const testhandleAnalyzeClick = async () => {
+    try {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        router.push('/result');
+      }, 5000);
+    } catch (error) {
+      console.error('Error uploading images:', error);
       alert('분석에 실패했습니다.');
     }
   };
 
-  if (analysisLoading) {
+  if (isLoading) {
     return (
       <LoadingContainer>
         <LottieContainer>
@@ -691,7 +747,7 @@ const Analyze: React.FC = () => {
             />
           </RightSection>
         </Section>
-        <AnalyzeButton onClick={handleAnalyzeClick}>분석하기</AnalyzeButton>
+        <AnalyzeButton onClick={testhandleAnalyzeClick}>분석하기</AnalyzeButton>
       </Card>
       {modalImage && (
         <ModalOverlay onClick={closeModal}>

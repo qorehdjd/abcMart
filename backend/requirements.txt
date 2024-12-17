@@ -10,3 +10,14 @@ boto3
 uvicorn 
 python-multipart
 bcrypt==4.0.1
+apscheduler
+numpy
+pandas
+aiohttp
+python-dotenv
+opencv-python
+Pillow>=9.0.0
+tensorflow==2.13.0
+boto3
+openai==0.28.0
+pydantic-core

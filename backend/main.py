@@ -8,9 +8,15 @@ from starlette.middleware.httpsredirect import (  # noqa  - https redirect
 from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
 
-from app.user_router import router
+from app import user_router
+from app import analysis_router
+
+from fastapi.middleware.gzip import GZipMiddleware
 
 app = FastAPI()
+
+
+app.mount("/images", StaticFiles(directory="C:/Users/MYCOM/Desktop/abcMart/backend/FootABC/images"), name="images")
 
 # middleware
 origins = [
@@ -26,13 +32,11 @@ app.add_middleware(
 )
 
 
-app.include_router(router, tags=['user_create'])
-app.include_router(router, tags=['login'])
-app.include_router(router, tags=['logout'])
-app.include_router(router, tags=['analyze'])
-app.include_router(router, tags=['create_gpt'])
+app.include_router(user_router.router, tags=['user'])
+app.include_router(analysis_router.router, tags=['analyze'])
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host="0.0.0.0", port=9900, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

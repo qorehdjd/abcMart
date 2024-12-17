@@ -5,11 +5,12 @@ export interface PostState {
   analysisError: null | string;
 }
 
-export interface ImagePair {
-  in: string;
-  out: string;
-}
-
 export interface AnalysisPayload {
   formData: FormData;
+}
+
+export interface AnalysisResult {
+  input: Record<string, string>;
+  output: Record<string, string>;
+  angles: Record<string, string>;
 }

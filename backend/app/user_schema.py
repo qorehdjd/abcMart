@@ -62,6 +62,11 @@ class LoginBase(BaseModel):
         return v
 
 
+# 닉네임 설정
+class Nickname(BaseModel):
+    nickname: str
+
+
 # 토큰 처리
 class Token(BaseModel):
     access_token: str
@@ -185,6 +190,7 @@ class resultBase(BaseModel):
     Bla : str
     blaInUrl : str
     blaOutUrl : str
+    
 
 
 # gpt 분석

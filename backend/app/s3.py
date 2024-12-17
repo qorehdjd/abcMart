@@ -1,54 +1,65 @@
+import asyncio
 import random
 import boto3
 from config import Config
 from datetime import datetime
 import os
+from PIL import Image
+import io
 
-# S3에 파일을 업로드하는 비동기 함수
-async def s3Upload(medi, output_dir):
-    current_date = datetime.now().strftime("%Y%m%d%H%M%S")
-    uploaded_files_urls = []  # 업로드된 파일의 URL을 저장할 리스트
-    
-    # S3 클라이언트 설정
+async def s3Upload(output_dir, filenames, image_data_list=None):
+    today = datetime.now().strftime("%Y%m%d")
+    folder_name = f"{today}/"
+
     s3 = boto3.client(
         's3',
         aws_access_key_id=Config.AWS_ACCESS_KEY,
         aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
     )
-    
+
     try:
-        # 입력 파일을 S3에 업로드
-        for image in medi:
-            if image:
-                image.file.seek(0)
-                input_filename = f'input_{current_date}_{random.randint(0, 999)}.jpg'
-                s3.upload_fileobj(
-                    image.file, 
-                    Config.S3_BUCKET, 
-                    input_filename,
-                    ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}
-                )
-                # 업로드한 파일의 URL을 생성하여 리스트에 추가
-                file_url = f"https://{Config.S3_BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{input_filename}"
-                uploaded_files_urls.append(file_url)
+        if image_data_list: 
+            async def upload_one_image(filename, image_data):
+                image = Image.open(io.BytesIO(image_data))
+                width, height = image.size
+                new_width = int(width * 0.9)
+                new_height = int(height * 0.9)
+                resized_image = image.resize((new_width, new_height))
 
-        # 결과 파일을 S3에 업로드
-        for filename in os.listdir(output_dir):
-            file_path = os.path.join(output_dir, filename)
-            if os.path.isfile(file_path):
-                output_filename = f'result_{current_date}_{random.randint(0, 999)}.jpg'
-                s3.upload_file(
-                    file_path, 
-                    Config.S3_BUCKET, 
-                    output_filename,
-                    ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'}
-                )
-                # 업로드한 파일의 URL을 생성하여 리스트에 추가
-                file_url = f"https://{Config.S3_BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{output_filename}"
-                uploaded_files_urls.append(file_url)
+                output_buffer = io.BytesIO()
+                resized_image.save(output_buffer, "JPEG", quality=70)
+                resized_image_data = output_buffer.getvalue()
 
-        print("파일 업로드 완료")
-        return uploaded_files_urls
+                s3.put_object(
+                    Bucket=Config.S3_BUCKET,
+                    Key=folder_name + filename,
+                    Body=resized_image_data,
+                    ACL='public-read',
+                    ContentType='image/jpeg'
+                )
+                file_url = f"https://{Config.S3_BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{folder_name}{filename}"
+                # print("업로드 완료", {"file_url": file_url})
+                return file_url
+
+            tasks = [upload_one_image(filename, image_data) for filename, image_data in zip(filenames, image_data_list)]
+            return await asyncio.gather(*tasks)
+
+        else:
+            async def upload_one_file(filename):
+                with open(os.path.join(output_dir, filename), 'rb') as f:
+                    s3.put_object(
+                        Bucket=Config.S3_BUCKET,
+                        Key=folder_name + filename,
+                        Body=f,
+                        ACL='public-read',
+                        ContentType='image/jpeg'
+                    )
+                file_url = f"https://{Config.S3_BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{folder_name}{filename}"
+                # print("업로드 완료", {"file_url": file_url})
+                return file_url
+
+            tasks = [upload_one_file(filename) for filename in filenames]
+            return await asyncio.gather(*tasks)
 
     except Exception as e:
         print(f"S3 업로드 실패: {e}")

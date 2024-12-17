@@ -26,7 +26,6 @@ const moveUpAndDown = keyframes`
 
 const GlobalStyle = createGlobalStyle`
   body {
-    overflow: hidden;
   }
   @media screen and (max-width: 1200px) {
     html {
@@ -74,6 +73,7 @@ const MainContainer = styled.div`
       p {
         font-size: 2rem;
         font-weight: 300;
+        line-height: 1.7;
       }
 
       button {
@@ -230,7 +230,7 @@ const Home = () => {
             <p>
               신발을 신고 걸을 때마다 항상 아팠던 여러분의 발,
               <br />
-              WALK101과 ABC 마트가 여러분의 발에 맞는 신발을 찾아드립니다.
+              WALK101과 ABC마트가 여러분의 발에 맞는 신발을 찾아드립니다.
             </p>
             <button className='responsive1000-hide' onClick={handleLoginClick}>
               시작하기

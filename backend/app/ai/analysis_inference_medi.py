@@ -1,6 +1,13 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 import os
+import random
+from typing import List
 import cv2
+import numpy as np
 import torch
+import boto3
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer, ColorMode
@@ -22,8 +29,8 @@ def setup_cfg(config_file, weights_path, num_classes, keypoint_num=None):
     cfg.MODEL.DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     return cfg
 
-seg_weights_path = "models/seg_model_final.pth"
-kp_weights_path = "models/key_model_final.pth"
+seg_weights_path = "C:/Users/MYCOM/Desktop/abcMart/backend/app/ai/models/seg_model_final.pth"
+kp_weights_path = "C:/Users/MYCOM/Desktop/abcMart/backend/app/ai/models/key_model_final.pth"
 
 seg_cfg = setup_cfg("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", seg_weights_path, num_classes=3)
 kp_cfg = setup_cfg("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml", kp_weights_path, num_classes=1, keypoint_num=14)
@@ -74,20 +81,52 @@ def draw_combined_predictions(image, seg_outputs, kp_outputs):
 
 
 
-def predict_and_save(input_dir, output_dir):
-    for image_name in os.listdir(input_dir):
-        image_path = os.path.join(input_dir, image_name)
-        img = cv2.imread(image_path)
+# async def predict_and_save(mediAnalyze, output_dir):
+#     current_date = datetime.now().strftime("%Y%m%d%H%M%S")
+#     for index, image_path in mediAnalyze:
+#         img = cv2.imread(image_path)
 
-        if img is None:
-            print(f"Skip {image_path}")
-            continue
+#         if img is None:
+#             print(f"Error: Empty image data for {image_path}")
+#             continue
 
-        seg_outputs = seg_predictor(img)
-        kp_outputs = kp_predictor(img)
+#         seg_outputs = seg_predictor(img)
+#         kp_outputs = kp_predictor(img)
+        
+#         combined_img = draw_combined_predictions(img, seg_outputs, kp_outputs)
 
-        combined_img = draw_combined_predictions(img, seg_outputs, kp_outputs)
 
-        result_image_path = os.path.join(output_dir, image_name)
-        cv2.imwrite(result_image_path, combined_img)
-        print(f"Predicted image saved to {result_image_path}")
+#         result_image_path = os.path.join(output_dir, f"result_{current_date}_{index}.jpg")
+#         cv2.imwrite(result_image_path, combined_img)
+#         print(f"Predicted image saved to {result_image_path}")
+        
+        
+
+
+async def process_image(index, image_path, output_dir, executor):
+    loop = asyncio.get_event_loop()
+    img = await loop.run_in_executor(executor, cv2.imread, image_path)
+
+    if img is None:
+        print(f"Error: Empty image data for {image_path}")
+        return
+
+    seg_outputs = await loop.run_in_executor(executor, seg_predictor, img)
+    kp_outputs = await loop.run_in_executor(executor, kp_predictor, img)
+    combined_img = await loop.run_in_executor(executor, draw_combined_predictions, img, seg_outputs, kp_outputs)
+
+    current_date = datetime.now().strftime("%Y%m%d%H%M%S")
+    result_image_path = os.path.join(output_dir, f"result_{current_date}_{index}.jpg")
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 70]
+    await loop.run_in_executor(executor, cv2.imwrite, result_image_path, combined_img, encode_param)
+    print(f"Predicted image saved to {result_image_path}")
+
+
+async def predict_and_save(mediAnalyze, output_dir):
+    
+    with ThreadPoolExecutor() as executor:
+        tasks = [
+            process_image(index, image_path, output_dir, executor)
+            for index, image_path in mediAnalyze
+        ]
+        await asyncio.gather(*tasks)

@@ -1,15 +1,14 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { login, clearError } from '../../reducers/user/userSlice';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import Image from 'next/image';
 import Link from 'next/link';
+import supabase from '../utils/supabaseClient'; // Supabase 클라이언트 초기화 파일을 만드세요.
 
 const GlobalStyle = createGlobalStyle`
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 700px) {
     html {
-      font-size: 45%;
+      font-size: 50%;
     }
   }
 `;
@@ -40,14 +39,14 @@ const LoginContainer = styled.div`
     padding: 30px;
     background-color: #e6f2ff;
     .login-walk-img-wrapper {
-      width: 100%; /* 래퍼의 너비를 100%로 설정하여 반응형 적용 */
-      max-width: 500px; /* 최대 너비를 설정하여 너무 커지지 않도록 제한 */
-      height: auto; /* 높이를 자동으로 조정 */
+      width: 50%;
+      max-width: 500px;
+      min-width: 400px;
+      height: auto;
       display: flex;
       justify-content: center;
       align-items: center;
       img {
-        position: relative !important;
         animation: ${runAnimation} 1s infinite alternate ease-in-out, ${fadeUp} 1s ease-out;
       }
     }
@@ -58,17 +57,14 @@ const LoginContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
     .login-wrapper {
       width: 60%;
       min-width: 542px;
+      max-width: 700px;
       animation: ${fadeUp} 1s ease-out;
       .abc-walk101-logo-wrapper {
-        width: 100%;
         display: flex;
         justify-content: center;
-        img {
-        }
       }
       .title {
         font-size: 2rem;
@@ -77,212 +73,185 @@ const LoginContainer = styled.div`
         justify-content: center;
         margin-bottom: 10%;
       }
-      form {
+      .social-login-buttons {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        .id-wrapper {
-          background-color: #fff;
-          width: 100%;
-          height: 40px;
-          margin-bottom: 2rem;
-          input {
-            border: none;
-            height: 100%;
-            width: 100%;
-            outline: none;
-            padding: 1rem;
-            border: solid 2px #ccc;
-          }
-          input:focus {
-            border: solid 2px #1a4a9d;
-          }
-        }
-        .password-wrapper {
-          background-color: #fff;
-          width: 100%;
-          height: 40px;
-          input {
-            border: none;
-            height: 100%;
-            width: 100%;
-            outline: none;
-            padding: 1rem;
-            border: solid 2px #ccc;
-          }
-          input:focus {
-            border: solid 2px #1a4a9d;
-          }
-        }
-        .persist-login-wrapper {
-          width: 100%;
-          font-size: 1.4rem;
-          margin-top: 1.4rem;
+        gap: 1rem;
+        max-width: 700px;
+        button {
           display: flex;
           align-items: center;
-          position: relative;
-          input {
-            position: relative;
-            top: 1px;
-            margin-right: 0.5rem;
-          }
-        }
-        .error-message {
-          color: red;
-          font-size: 1.2rem;
-          margin-top: 1rem;
-          text-align: left;
           width: 100%;
-          position: absolute;
-          top: 3rem; /* Adjust this value as needed */
-        }
-        .login-btn-wrapper {
-          width: 100%;
-          margin-bottom: 1rem;
-          margin-top: 10%;
-          .login-btn {
-            width: 100%;
-            background-color: #1a4a9d;
-            color: #fff;
-            border: none;
-            padding: 1.2rem 0;
-            margin-top: 2rem;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 1.8rem;
-          }
-        }
-      }
-      .find-wrap {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 1.4rem;
-        .find-text {
-          font-size: 1.4rem;
+          padding: 1.2rem;
+          border: none;
+          border-radius: 4px;
+          font-size: 1.6rem;
           cursor: pointer;
-          display: flex;
-          align-items: center;
+          justify-content: center;
+          img {
+            margin-right: 7px;
+          }
         }
-        .find-text:hover {
-          text-decoration: underline;
-          text-underline-offset: 4px;
+        .google {
+          background-color: #4285f4;
+          color: white;
+        }
+        .apple {
+          background-color: #000000;
+          color: white;
+        }
+        .kakao {
+          background-color: #fee500;
+          color: #000000;
         }
       }
-      .find-wrap li + li::before {
-        content: '';
-        display: inline-block;
-        width: 1px;
-        height: 15px;
-        background-color: #d3d5d7;
-        background-color: black;
-        margin: 2px 15px 0;
-        vertical-align: top;
-      }
-    }
-    .copyright {
-      position: absolute;
-      bottom: 20px;
     }
   }
-
-  @media screen and (max-width: 1200px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1.5fr;
+  @media (max-width: 1240px) {
+    grid-template-columns: 1fr; /* 1열로 변경 */
+    grid-template-rows: 1fr 1fr; /* 세로 레이아웃 */
     .login-walk-img-section {
       display: flex;
       justify-content: center;
+      padding: 30px;
+      background-color: #e6f2ff;
       .login-walk-img-wrapper {
-        width: 50%;
+        width: 30%;
+        /* max-width: 500px; */
+        /* min-width: auto; */
+        height: auto;
       }
     }
     .login-section {
-      justify-content: space-between;
-      align-items: center;
+      justify-content: flex-start;
+      margin-top: 7rem;
       .login-wrapper {
-        flex: 1;
-        margin-top: 3rem;
+        width: 80%;
+        min-width: auto;
+        max-width: 700px;
+        .abc-walk101-logo-wrapper {
+          a {
+            width: 50%;
+          }
+        }
         .title {
+          font-size: 2.3rem;
           margin-bottom: 5%;
         }
-        form {
-          .id-wrapper {
-            height: 4.5rem;
-          }
-          .password-wrapper {
-            height: 4.5rem;
-          }
-          .login-btn-wrapper {
-            margin-top: 5%;
+        .social-login-buttons {
+          display: flex;
+          flex-direction: column;
+          max-width: 700px;
+          button {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            img {
+              margin-right: 7px;
+            }
           }
         }
-      }
-      .copyright {
-        position: static;
-        bottom: 0px;
-        margin-top: 2rem;
       }
     }
   }
 
-  @media screen and (max-width: 600px) {
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr; /* 1열로 변경 */
+    grid-template-rows: 1fr 1fr; /* 세로 레이아웃 */
     .login-walk-img-section {
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+      background-color: #e6f2ff;
       .login-walk-img-wrapper {
-        width: 70%;
+        width: 60%;
+        /* max-width: 500px; */
+        min-width: auto;
+        height: auto;
       }
     }
     .login-section {
-      justify-content: space-between;
-      margin: 3rem 0;
+      justify-content: flex-start;
+      margin-top: 7rem;
       .login-wrapper {
-        width: 90%;
+        width: 80%;
         min-width: auto;
-        margin: 3rem 0;
-        .title {
-          font-size: 1.8rem;
-          text-align: center;
-        }
+        max-width: 700px;
         .abc-walk101-logo-wrapper {
-          width: 100%;
           a {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-          }
-          img {
-            width: 70% !important;
-            height: fit-content !important;
+            width: 80%;
           }
         }
-        form {
-          .persist-login-wrapper {
+        .title {
+          font-size: 2rem;
+          margin-bottom: 5%;
+        }
+        .social-login-buttons {
+          display: flex;
+          flex-direction: column;
+          max-width: 700px;
+          button {
+            width: 100%;
+            padding: 1.4rem;
+            border-radius: 4px;
             font-size: 1.8rem;
-            margin-top: 1.4rem;
-            input {
-              position: relative;
-              top: 1px;
-              margin-right: 0.8rem;
+            margin-bottom: 1rem;
+            img {
+              margin-right: 7px;
             }
           }
         }
-        .find-wrap {
-          margin-top: 1.4rem;
-          .find-text {
-            font-size: 1.8rem;
-            cursor: pointer;
-            display: flex;
+      }
+    }
+  }
+
+  @media (max-width: 450px) {
+    grid-template-columns: 1fr; /* 1열로 변경 */
+    grid-template-rows: 1fr 1fr; /* 세로 레이아웃 */
+    .login-walk-img-section {
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+      background-color: #e6f2ff;
+      .login-walk-img-wrapper {
+        width: 80%;
+        /* max-width: 500px; */
+        min-width: auto;
+        height: auto;
+      }
+    }
+    .login-section {
+      justify-content: flex-start;
+      margin-top: 7rem;
+      .login-wrapper {
+        /* width: 70%; */
+        min-width: auto;
+        max-width: 700px;
+        .abc-walk101-logo-wrapper {
+          a {
+            width: 80%;
           }
         }
-      }
-      .copyright {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        bottom: 0;
-        position: static;
-        img {
-          width: 70% !important;
-          height: fit-content !important;
+        .title {
+          font-size: 1.4rem;
+          margin-bottom: 5%;
+        }
+        .social-login-buttons {
+          display: flex;
+          flex-direction: column;
+          max-width: 700px;
+          button {
+            width: 100%;
+            padding: 1.4rem;
+            border-radius: 4px;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            img {
+              margin-right: 7px;
+            }
+          }
         }
       }
     }
@@ -291,41 +260,55 @@ const LoginContainer = styled.div`
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { logInLoading, logInDone, logInError } = useAppSelector((state) => state.user);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const didMount = useRef<boolean>(false);
-
-  // 임시;
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    router.push('/survey');
-  }, []);
-
-  // const handleSubmit = useCallback(
-  //   (e: React.FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault();
-  //     dispatch(login({ userId: username, password }));
-  //   },
-  //   [dispatch, username, password],
-  // );
 
   // useEffect(() => {
-  //   if (didMount.current) {
-  //     if (logInDone === true) {
-  //       router.push('/survey');
-  //     }
-  //     router.push('survey');
-  //   } else {
-  //     didMount.current = true;
-  //   }
-  // }, [logInDone, router]);
+  //   const { subscription } = supabase.auth.onAuthStateChange((event, session) => {
+  //     if (event === 'SIGNED_IN') {
+  //       // 로그인 성공 시 URL 클리닝
+  //       const cleanUrl = window.location.origin + router.pathname;
+  //       window.history.replaceState(null, '', cleanUrl);
 
-  // 페이지가 마운트될 때 에러 상태 초기화
+  //       console.log('User signed in:', session);
+  //     }
+  //   });
+
+  //   return () => {
+  //     subscription.unsubscribe(); // 메모리 누수 방지
+  //   };
+  // }, [router]);
+
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'kakao') => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: 'http://localhost:3000/survey', // 리다이렉션 URL 설정
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      if (error) throw error;
+      console.log('Redirecting...');
+    } catch (err) {
+      console.error('Social Login Error:', err);
+    }
+  };
+
+  const onClick = useCallback(() => {
+    router.push('survey');
+  }, []);
+
   useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        router.push('/dashboard'); // 로그인 성공 시 리다이렉트 경로
+      }
+    };
+    checkUser();
+  }, [router]);
 
   return (
     <>
@@ -333,13 +316,7 @@ const Login: React.FC = () => {
       <LoginContainer>
         <div className='login-walk-img-section'>
           <div className='login-walk-img-wrapper'>
-            <Image
-              src='/imgs/running-img.svg'
-              alt='loginWalkImg'
-              layout='responsive' // 반응형 레이아웃 설정
-              width={493} // 기본 이미지 너비 설정
-              height={435} // 기본 이미지 높이 설정
-            />
+            <Image src='/imgs/running-img.svg' alt='loginWalkImg' layout='responsive' width={493} height={435} />
           </div>
         </div>
         <div className='login-section'>
@@ -350,36 +327,22 @@ const Login: React.FC = () => {
               </Link>
             </div>
             <div className='title'>
-              <p>WALK101과 ABC-MART가 함께 하는 발목 솔루션 프로그램</p>
+              <p>WALK101과 ABC마트가 함께 하는 발목 솔루션 프로그램</p>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className='id-wrapper'>
-                <input placeholder='직원 아이디' value={username} onChange={(e) => setUsername(e.target.value)} />
-              </div>
-              <div className='password-wrapper'>
-                <input
-                  placeholder='비밀번호'
-                  type='password'
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div className='persist-login-wrapper'>
-                <input id='persist-login' type='checkbox' />
-                <label htmlFor='persist-login'>로그인 상태 유지하기</label>
-                {logInError && <div className='error-message'>{logInError}</div>}
-              </div>
-              <div className='login-btn-wrapper'>
-                <button className='login-btn' type='submit' disabled={logInLoading === true}>
-                  {logInLoading === true ? '로딩 중...' : '로그인'}
-                </button>
-              </div>
-            </form>
-            <ul className='find-wrap'>
-              <li className='find-text'>아이디 찾기</li>
-              <li className='find-text'>비밀번호 찾기</li>
-              <li className='find-text'>회원가입</li>
-            </ul>
+            <div className='social-login-buttons'>
+              <button className='google' onClick={() => onClick()}>
+                <Image src='/svg/google.svg' alt='Google Logo' width={20} height={20} />
+                Google로 로그인
+              </button>
+              <button className='kakao' onClick={() => handleSocialLogin('kakao')}>
+                <Image src='/svg/kakao.svg' alt='Kakao Logo' width={20} height={20} />
+                Kakao로 로그인
+              </button>
+              <button className='apple' onClick={() => handleSocialLogin('apple')}>
+                <Image src='/svg/apple.svg' alt='Apple Logo' width={20} height={20} />
+                Apple로 로그인
+              </button>
+            </div>
           </div>
         </div>
       </LoginContainer>

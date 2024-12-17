@@ -5,7 +5,8 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['walk101-abcmart.s3.ap-northeast-2.amazonaws.com'],
+    formats: ['image/webp'], // webp 형식을 우선 제공
+    domains: ['172.30.1.27'],
   },
 };
 
